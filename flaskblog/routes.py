@@ -20,7 +20,10 @@ def home():
 
 @app.route("/about")
 def about():
-    return render_template('about.html', title='About')
+    genData()
+    posts = Employees.query.all()
+    #tests = db.query.all()
+    return render_template('about.html', title='About', posts=posts)
 
 
 @app.route("/register", methods=['GET', 'POST'])

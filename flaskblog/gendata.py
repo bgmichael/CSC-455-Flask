@@ -31,9 +31,10 @@ def genData():
     db.create_all()
 
     for x in employeeData:
-        newEmployee = Employees(Employee_ID=[x[0]], name=[x[1]],
-                               title=[x[2]], salary=[x[3]],
-                               join_date=[x[4]])
+        newEmployee = Employees(Employee_ID=x[0], name=x[1],
+                               title=x[2], salary=x[3],
+                               join_date=x[4])
+        print(newEmployee)
         db.session.add(newEmployee)
     try:
         db.session.commit()

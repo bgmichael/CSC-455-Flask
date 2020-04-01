@@ -1,4 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>About Page</h1>
+    <h1>About Page1</h1>
+
+    <body>
+
+            {% for post in posts %}
+
+                <p>
+                    Name: {{ post.name }}
+                    Title: {{ post.title }}
+                    Salary: {{ post.salary }}
+                </p>
+
+            {% endfor %}
+
+    </body>
 {% endblock content %}

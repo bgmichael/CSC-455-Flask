@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>Example Item Database</title>
+    </head>
+    <a href="{{ url_for('joinExample') }}">Join Example</a>
+    <h1>
+        All Items 
+    </h1>
+
+    <body>
+
+        {% for item in items %}
+
+            <p>
+                UPC: {{ item.upc }}
+                Name: {{ item.name }}
+                Weight: {{ item.weight }}  
+            </p>
+
+        {% endfor %}
+
+    </body>
+</html>
