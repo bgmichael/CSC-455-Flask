@@ -31,6 +31,16 @@ class Post(db.Model):
         return f"Post('{self.title}', '{self.date_posted}')"
 
 
+class Employees(db.Model):
+    Employee_ID = db.Column(db.Integer, primary_key=True)  # db.ForeignKey('works_at_relationship.Employee_ID')
+    name = db.Column(db.String(25), nullable=False)
+    title = db.Column(db.String(25), nullable=False)
+    salary = db.Column(db.Integer, nullable=False)
+    join_date = db.Column(db.String(25), nullable=False)
+
+    def __repr__(self):
+        return f"Employees('{self.Employee_ID}', '{self.name}', '{self.title}','{self.salary}','{self.join_date}')"
+
 ###### After this come my personal additions. I will try to create the tables for our databases.##########################
 
 # class Product(db.Model):
@@ -80,16 +90,6 @@ class Post(db.Model):
 #     def __repr__(self):
 #         return f"Works_At_Relationship('{self.Store_ID}', '{self.Employee_ID}')"
 
-    
-class Employees(db.Model):
-    Employee_ID = db.Column(db.Integer, primary_key=True) #db.ForeignKey('works_at_relationship.Employee_ID')
-    name = db.Column(db.String(25), nullable=False)
-    title = db.Column(db.String(25), nullable=False)
-    salary = db.Column(db.Integer, nullable=False)
-    join_date = db.Column(db.String(25), nullable=False)
-
-    def __repr__(self):
-        return f"Employees('{self.Employee_ID}', '{self.name}', '{self.title}','{self.salary}','{self.join_date}')"
 
 
 
