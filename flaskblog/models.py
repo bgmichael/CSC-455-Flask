@@ -43,30 +43,31 @@ class Employees(db.Model):
 
 ###### After this come my personal additions. I will try to create the tables for our databases.##########################
 
-# class Product(db.Model):
-#     Product_ID = db.Column(db.Integer, primary_key=True)
-#     price = db.Column(db.Float(), nullable=False)
-#     product_name = db.Column(db.String(25), nullable=False)
-#     quantity = db.Column(db.Integer, nullable=False)
-#
-#     def __repr__(self):
-#         return f"Product('{self.Product_ID}', '{self.price}', '{self.product_name}','{self.quantity}')"
-#
-# class Product_Information(db.Model):
-#     Individual_ID = db.Column(db.Integer, db.ForeignKey('part_of_relationship.Individual_ID'), primary_key=True, )
-#     expiration_date = db.Column(db.DateTime)
-#     product_weight = db.Column(db.Float)
-#
-#     def __repr__(self):
-#         return f"Product_Information('{self.Individual_ID}', '{self.expiration_date}','{self.product_weight}')"
-#
-# class Part_Of_Relationship(db.Model):
-#     Individual_ID = db.Column(db.Integer, db.ForeignKey('product_information.Individual_ID'), primary_key=True)
-#     Product_ID = db.Column(db.Integer,  db.ForeignKey('product.Product_ID'), primary_key=True)
-#
-#     def __repr__(self):
-#         return f"Part_Of_Relationship('{self.Individual_ID}', '{self.Product_ID}')"
-#
+class Product(db.Model):
+    Product_ID = db.Column(db.Integer, primary_key=True)
+    price = db.Column(db.Float(), nullable=False)
+    product_name = db.Column(db.String(25), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"Product('{self.Product_ID}', '{self.price}', '{self.product_name}','{self.quantity}')"
+
+class Product_Information(db.Model):
+    Individual_ID = db.Column(db.Integer, primary_key=True)
+    expiration_date = db.Column(db.String(25), nullable=False)
+    product_weight = db.Column(db.Float(), nullable=False)
+
+    def __repr__(self):
+        return f"Product_Information('{self.Individual_ID}', '{self.expiration_date}','{self.product_weight}')"
+
+class Part_Of_Relationship(db.Model):
+    Individual_ID = db.Column(db.Integer, db.ForeignKey('product__information.Individual_ID'), primary_key=True)
+    Product_ID = db.Column(db.Integer, db.ForeignKey('product.Product_ID'), primary_key=True)
+    #db.ForeignKey('product_information.Individual_ID'), db.ForeignKey('product.Product_ID')
+
+    def __repr__(self):
+        return f"Part_Of_Relationship('{self.Individual_ID}', '{self.Product_ID}')"
+
 # class Sold_By_Relationship(db.Model):
 #     Store_ID = db.Column(db.Integer, db.ForeignKey('store.Store_ID'), primary_key=True, )
 #     Product_ID = db.Column(db.Integer, primary_key=True)

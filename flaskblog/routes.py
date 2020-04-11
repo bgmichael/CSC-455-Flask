@@ -3,26 +3,49 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from flaskblog.models import User, Post, Employees
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm
+from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
-from flaskblog.gendata import genData
+from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship
 
 
 
 @app.route("/")
 @app.route("/home")
 def home():
-    genData()
+    test = Employees.query.all()
+    print(len(test))
+    if len(test) < 1:
+        print('inside genData loop')
+        genData()
+
+    if Product.query.first() == None:
+        instantiateItem()
+    if Product_Information.query.first() == None:
+        print('inside productinformation test loop')
+        instantiateProductInfo()
+    if Part_Of_Relationship.query.first() == None:
+        instantiateRelationship()
+
+        # productInfo = Product_Information(Individual_ID=11, expiration_date="April 10 2020", product_weight=13.00)
+        # print(productInfo)
+        # db.session.add(productInfo)
+        # db.session.commit()
+
     posts = Employees.query.all()
     return render_template(('home.html'), posts=posts)
 
 
+
 @app.route("/about")
 def about():
-    genData()
+    test = Employees.query.all()
+    if len(test) < 1:
+        genData()
+    else:
+        posts = Employees.query.all()
+        return render_template('about.html', title='About', posts=posts)
     posts = Employees.query.all()
-    #tests = db.query.all()
     return render_template('about.html', title='About', posts=posts)
 
 
@@ -109,6 +132,29 @@ def new_post():
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post',
+                           form=form, legend='New Post')
+
+@app.route("/post/add", methods=['GET', 'POST'])
+@login_required
+def add_item():
+    test = Product.query.all()
+    if len(test) < 1:
+        instantiateItem()
+    form = ItemForm()
+    if form.validate_on_submit():
+        item = Product(Product_ID=form.Product_ID.data,
+                       price=form.price.data,
+                       product_name=form.product_name.data,
+                       quantity=form.quantity.data,)
+        itemInfo = Product_Information(Individual_ID=form.Individual_ID.data,
+                                       expiration_date=form.expiration_date.data,
+                                       product_weight=form.product_weight.data)
+        db.session.add(item)
+        db.session.add(itemInfo)
+        db.session.commit()
+        flash('Your item has been added!', 'success')
+        return redirect(url_for('home'))
+    return render_template('add_item.html', title='New Item',
                            form=form, legend='New Post')
 
 

@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from flaskblog.models import User, Post, Employees
+from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
     #Product, Product_Information, \
     #Part_Of_Relationship, Sold_By_Relationship, Store, Works_At_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
@@ -27,8 +27,9 @@ employeeData = [[123456,"Bob Dole","Manager",50000, '2019-06-11'], [123452,"Bets
 
 def genData():
 
-    db.drop_all()
+    #db.drop_all()
     db.create_all()
+    print('just reset database inside genData')
 
     for x in employeeData:
         newEmployee = Employees(Employee_ID=x[0], name=x[1],
@@ -36,10 +37,46 @@ def genData():
                                join_date=x[4])
         print(newEmployee)
         db.session.add(newEmployee)
+
+    hashed_password = bcrypt.generate_password_hash('Password123').decode('utf-8')
+    user = User(username='bgmichael', email='bgmichael@outlook.com', password=hashed_password)
+    db.session.add(user)
     try:
         db.session.commit()
     except:
         db.session.rollback()
+
+def instantiateItem():
+    print('inside instantiateItem function2')
+    product = Product(Product_ID=1, price=150.00,
+                    product_name='Fur Coat', quantity=1,)
+    print(product)
+    db.session.add(product)
+    try:
+        db.session.commit()
+    except:
+        print('inside instantiateItem product except')
+        db.session.rollback()
+
+def instantiateRelationship():
+    print('inside instantiateItem function2')
+    relationship = Part_Of_Relationship(Individual_ID=112233,
+                                        Product_ID=1)
+    print(relationship)
+    db.session.add(relationship)
+    db.session.commit()
+
+
+def instantiateProductInfo():
+    print('inside instantiateProductInfo function')
+    productInfo = Product_Information(Individual_ID=112233,
+                                      expiration_date='December 2025',
+                                      product_weight=5.00)
+    print(productInfo)
+    db.session.add(productInfo)
+    db.session.commit()
+
+
 
 
 

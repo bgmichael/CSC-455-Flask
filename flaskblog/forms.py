@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flaskblog.models import User
 
@@ -60,3 +60,16 @@ class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Post')
+
+class ItemForm(FlaskForm):
+    Product_ID = IntegerField('Product ID (Int)', validators=[DataRequired()])
+    price = FloatField('Price (Decimal)', validators=[DataRequired()])
+    product_name = TextAreaField('Product name (Text)', validators=[DataRequired()])
+    quantity = IntegerField('Quantity (Int)', validators=[DataRequired()])
+    #####
+    Individual_ID = IntegerField('Individual ID (Int)', validators=[DataRequired()])
+    expiration_date = TextAreaField('Expiration Date (Text)', validators=[DataRequired()])
+    product_weight = FloatField('Product Weight (Decimal)', validators=[DataRequired()])
+    #####
+    submit = SubmitField('Add')
+
