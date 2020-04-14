@@ -22,7 +22,19 @@ employeeData = [[123456,"Bob Dole","Manager",50000, '2019-06-11'], [123452,"Bets
                 [123446,"Penny Diaz","Cashier",15000, '2020-06-18'], [123440,"Susan Reynolds","Clerk",26000, '2016-05-28'],
                 [123441,"John Graham","Stocker",17000, '2020-01-17']]
 
+products = [[959742, 6.00, "Turkey Jerky Teriyaki", 4],
+            [50255224003, 3.50, "Ritter Sport Dark Chocolate", 3],
+            [80432106419, 20.00, "Single Pot Still Irish Whiskey", 10],
+            [859612001024, 9.99, "21st Amendment Hell or High Watermelon Wheat Beer", 12],
+            [805002000375, 4.00, "Dusk Deodorant", 28],
+            [321134771643, 3.00, "Blue Mint Antiseptic Mouth Rinse", 12]]
 
+productInformationAndRelationship = [[1, "November 2022", 4.00, 959742],
+                                     [2, "January 2021", 3.00, 50255224003],
+                                     [3, "January 2030", 10.00, 80432106419],
+                                     [4, "January 2022", 12.00, 859612001024],
+                                     [5, "February 2021,", 4.00, 805002000375],
+                                     [6, "March 2022", 12.00, 321134771643]]
 
 
 def genData():
@@ -48,10 +60,13 @@ def genData():
 
 def instantiateItem():
     print('inside instantiateItem function2')
-    product = Product(Product_ID=1, price=150.00,
-                    product_name='Fur Coat', quantity=1,)
-    print(product)
-    db.session.add(product)
+
+    for x in products:
+        product = Product(Product_ID=x[0], price=x[1],
+                    product_name=x[2], quantity=x[3])
+        print(product)
+        db.session.add(product)
+
     try:
         db.session.commit()
     except:
@@ -59,21 +74,25 @@ def instantiateItem():
         db.session.rollback()
 
 def instantiateRelationship():
-    print('inside instantiateItem function2')
-    relationship = Part_Of_Relationship(Individual_ID=112233,
-                                        Product_ID=1)
-    print(relationship)
-    db.session.add(relationship)
+    print('inside instantiateItemRelationship function2')
+    for x in productInformationAndRelationship:
+
+        relationship = Part_Of_Relationship(Individual_ID=x[0],
+                                        Product_ID=x[3])
+        print(relationship)
+        db.session.add(relationship)
+
     db.session.commit()
 
 
 def instantiateProductInfo():
     print('inside instantiateProductInfo function')
-    productInfo = Product_Information(Individual_ID=112233,
-                                      expiration_date='December 2025',
-                                      product_weight=5.00)
-    print(productInfo)
-    db.session.add(productInfo)
+    for x in productInformationAndRelationship:
+        productInfo = Product_Information(Individual_ID=x[0],
+                                          expiration_date=x[1],
+                                          product_weight=x[2])
+        print(productInfo)
+        db.session.add(productInfo)
     db.session.commit()
 
 

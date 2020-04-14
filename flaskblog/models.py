@@ -46,7 +46,7 @@ class Employees(db.Model):
 class Product(db.Model):
     Product_ID = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Float(), nullable=False)
-    product_name = db.Column(db.String(25), nullable=False)
+    product_name = db.Column(db.String(40), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):

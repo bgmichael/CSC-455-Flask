@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-group">
+                {{ form.category.label(class="form-control-label") }}
+                {% if form.category.errors %}
+                    {{ form.category(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.category(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.searchCritereaNumber.label(class="form-control-label") }}
+                {% if form.searchCritereaNumber.errors %}
+                    {{ form.searchCritereaNumber(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.content.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.searchCritereaNumber(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.searchCritereaText.label(class="form-control-label") }}
+                {% if form.searchCritereaText.errors %}
+                    {{ form.searchCritereaText(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.content.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.searchCritereaText(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            {% for data in inputData %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h2>Display Data</h2>
+                            <p>Query: {{ query }}</p>
+                            <p>Integer: {{ data[1] }}</p>
+                            <p>Text: {{ data[2] }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+{% endblock content %}

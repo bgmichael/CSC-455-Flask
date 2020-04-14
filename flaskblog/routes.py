@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship
@@ -156,6 +156,40 @@ def add_item():
         return redirect(url_for('home'))
     return render_template('add_item.html', title='New Item',
                            form=form, legend='New Post')
+
+
+@app.route("/post/search", methods=['GET', 'POST'])
+@login_required
+def search():
+    inputData = []
+    query = Product_Information.query.first()
+    test = Product.query.all()
+    if len(test) < 1:
+        instantiateItem()
+    form = SearchForm()
+    if form.validate_on_submit():
+        category = form.category.data
+        searchInt = form.searchCritereaNumber.data
+        serachText = form.searchCritereaText.data
+        inputData = [(category, searchInt, serachText)]
+        # flash('Your query has been performed!', 'success')
+        # return redirect(url_for('search'))
+    # inputData = []
+        print(inputData[0][0])
+        if inputData[0][0] == 'Product':
+            query = Product.query.get(searchInt)
+        elif inputData[0][0] == 'Product_Information':
+            query = Product_Information.query.get(searchInt)
+        elif inputData[0][0] == 'Part_Of_Relationship':
+            query = Part_Of_Relationship.query.get(searchInt)
+        elif inputData[0][0] == 'Employees':
+            query = Employees.query.get(searchInt)
+    return render_template('search.html', title='New Search',
+                           form=form, legend='New Post', inputData=inputData, query=query)
+
+
+
+
 
 
 @app.route("/post/<int:post_id>")

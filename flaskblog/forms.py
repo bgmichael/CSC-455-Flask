@@ -4,6 +4,8 @@ from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flaskblog.models import User
+from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
+from wtforms.ext.django.fields import ModelSelectField
 
 
 class RegistrationForm(FlaskForm):
@@ -73,3 +75,8 @@ class ItemForm(FlaskForm):
     #####
     submit = SubmitField('Add')
 
+class SearchForm(FlaskForm):
+    category = TextAreaField('Category (Text)', validators=[DataRequired()])
+    searchCritereaNumber = FloatField('Search For (Number): ', validators=[DataRequired()])
+    searchCritereaText = TextAreaField('Search For (Text): ', validators=[DataRequired()])
+    submit = SubmitField('Search')
