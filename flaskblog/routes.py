@@ -7,7 +7,7 @@ from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, Post
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship
-
+from sqlalchemy import text, Table, Column, Integer, String, MetaData
 
 
 @app.route("/")
@@ -161,7 +161,10 @@ def add_item():
 @app.route("/post/search", methods=['GET', 'POST'])
 @login_required
 def search():
+    listLength = 0
+    outputList = []
     inputData = []
+    name = 'none'
     query = Product_Information.query.first()
     test = Product.query.all()
     if len(test) < 1:
@@ -171,21 +174,48 @@ def search():
         category = form.category.data
         searchInt = form.searchCritereaNumber.data
         serachText = form.searchCritereaText.data
-        inputData = [(category, searchInt, serachText)]
+        inputData = [[category, searchInt]]#, serachText)]
+        # catagoryText = text(category)
+        # queryTest = catagoryText.query.get(searchInt)
         # flash('Your query has been performed!', 'success')
-        # return redirect(url_for('search'))
-    # inputData = []
+
         print(inputData[0][0])
         if inputData[0][0] == 'Product':
-            query = Product.query.get(searchInt)
+            name = Product.query.get(searchInt).product_name
+            price = Product.query.get(searchInt).price
+            ID = Product.query.get(searchInt).Product_ID
+            quantity = Product.query.get(searchInt).quantity
+            outputList = [['name', name], ['price', price],
+                         ['ID', ID], ['quantity', quantity]]
+            listLength = len(outputList)
         elif inputData[0][0] == 'Product_Information':
-            query = Product_Information.query.get(searchInt)
+            IndividualID = Product_Information.query.get(searchInt).Individual_ID
+            expirationDate = Product_Information.query.get(searchInt).expiration_date
+            product_weight = Product_Information.query.get(searchInt).product_weight
+            outputList = [['Individual ID', IndividualID], ['Expiration Date', expirationDate],
+                          ['Product Weight', product_weight]]
+            listLength = len(outputList)
         elif inputData[0][0] == 'Part_Of_Relationship':
-            query = Part_Of_Relationship.query.get(searchInt)
+            IndividualID = Part_Of_Relationship.query.get(searchInt).IndividualID
+            ProductID = Part_Of_Relationship.query.get(searchInt).Product_ID
+            outputList = [['Individual ID', IndividualID], ['Product ID', ProductID]]
+            listLength = len(outputList)
         elif inputData[0][0] == 'Employees':
-            query = Employees.query.get(searchInt)
+            EmployeeID = Employees.query.get(searchInt).Employee_ID
+            Name = Employees.query.get(searchInt).name
+            Title = Employees.query.get(searchInt).title
+            Salary = Employees.query.get(searchInt).salary
+            JoinDate = Employees.query.get(searchInt).join_date
+            outputList = [['Employee ID', EmployeeID], ['Name', Name],
+                          ['Title', Title], ['Salary', Salary], ['Join Date', JoinDate]]
+            listLength = len(outputList)
+
+
+
+        # query = text("SELECT * FROM" + inputData[0][0] + "where Product_ID is " + str(searchInt))
+
     return render_template('search.html', title='New Search',
-                           form=form, legend='New Post', inputData=inputData, query=query)
+                           form=form, legend='New Post', outputList=outputList, listLength=listLength)
 
 
 

@@ -45,18 +45,19 @@
                 {% endif %}
             </div>
 
-            {% for data in inputData %}
+            {% if listLength > 0 %}
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-4">
                         <h2>Display Data</h2>
-                            <p>Query: {{ query }}</p>
-                            <p>Integer: {{ data[1] }}</p>
-                            <p>Text: {{ data[2] }}</p>
+                        {% for x in range(listLength) %}
+                            <p>{{outputList[x][0]}} : {{ outputList[x][1] }}</p>
+                            <p> {{name}} </p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-            {% endfor %}
+            {% endif %}
 
         </fieldset>
         <div class="form-group">
