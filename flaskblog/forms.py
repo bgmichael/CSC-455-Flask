@@ -78,5 +78,14 @@ class ItemForm(FlaskForm):
 class SearchForm(FlaskForm):
     category = TextAreaField('Category (Text)', validators=[DataRequired()])
     searchCritereaNumber = FloatField('Search For (Number): ', validators=[DataRequired()])
-    searchCritereaText = TextAreaField('Search For (Text (put in something for testing)): ', validators=[DataRequired()])
     submit = SubmitField('Search')
+
+class SearchTextForm(FlaskForm):
+    category = TextAreaField('Category (Text)', validators=[DataRequired()])
+    searchCritereaText = TextAreaField('Search For (Text or Text/Number Combo): ', validators=[DataRequired()])
+    submit = SubmitField('Search')
+
+class JoinForm(FlaskForm):
+    categoryOne = TextAreaField('Category One (Text)', validators=[DataRequired()])
+    categoryTwo = TextAreaField('Category Two (Text)', validators=[DataRequired()])
+    submit = SubmitField('Join')

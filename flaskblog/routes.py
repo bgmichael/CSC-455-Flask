@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, SearchTextForm, JoinForm
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship
@@ -34,7 +34,6 @@ def home():
 
     posts = Employees.query.all()
     return render_template(('home.html'), posts=posts)
-
 
 
 @app.route("/about")
@@ -134,6 +133,7 @@ def new_post():
     return render_template('create_post.html', title='New Post',
                            form=form, legend='New Post')
 
+
 @app.route("/post/add", methods=['GET', 'POST'])
 @login_required
 def add_item():
@@ -145,7 +145,7 @@ def add_item():
         item = Product(Product_ID=form.Product_ID.data,
                        price=form.price.data,
                        product_name=form.product_name.data,
-                       quantity=form.quantity.data,)
+                       quantity=form.quantity.data, )
         itemInfo = Product_Information(Individual_ID=form.Individual_ID.data,
                                        expiration_date=form.expiration_date.data,
                                        product_weight=form.product_weight.data)
@@ -155,7 +155,18 @@ def add_item():
         flash('Your item has been added!', 'success')
         return redirect(url_for('home'))
     return render_template('add_item.html', title='New Item',
-                           form=form, legend='New Post')
+                           form=form, legend='New Item')
+
+# @app.route("/post/search", methods=['GET', 'POST'])
+# @login_required
+# def join():
+#
+#     form = JoinForm()
+#     if form.validate_on_submit():
+#         categoryOne = form.categoryOne.data
+#         categoryTwo = form.categoryTwo.data
+#         inputData = [[categoryOne, categoryTwo]]  # , searchText]]
+
 
 
 @app.route("/post/search", methods=['GET', 'POST'])
@@ -173,8 +184,7 @@ def search():
     if form.validate_on_submit():
         category = form.category.data
         searchInt = form.searchCritereaNumber.data
-        serachText = form.searchCritereaText.data
-        inputData = [[category, searchInt]]#, serachText)]
+        inputData = [[category, searchInt]]  # , searchText]]
 
         print(inputData[0][0])
         if inputData[0][0] == 'Product':
@@ -183,8 +193,9 @@ def search():
             ID = Product.query.get(searchInt).Product_ID
             quantity = Product.query.get(searchInt).quantity
             outputList = [['name', name], ['price', price],
-                         ['ID', ID], ['quantity', quantity]]
+                          ['ID', ID], ['quantity', quantity]]
             listLength = len(outputList)
+
         elif inputData[0][0] == 'Product_Information':
             IndividualID = Product_Information.query.get(searchInt).Individual_ID
             expirationDate = Product_Information.query.get(searchInt).expiration_date
@@ -192,6 +203,7 @@ def search():
             outputList = [['Individual ID', IndividualID], ['Expiration Date', expirationDate],
                           ['Product Weight', product_weight]]
             listLength = len(outputList)
+
         elif inputData[0][0] == 'Part_Of_Relationship':
             IndividualID = Part_Of_Relationship.query.get(searchInt).IndividualID
             ProductID = Part_Of_Relationship.query.get(searchInt).Product_ID
@@ -207,16 +219,70 @@ def search():
                           ['Title', Title], ['Salary', Salary], ['Join Date', JoinDate]]
             listLength = len(outputList)
 
-
+        print(outputList)
 
         # query = text("SELECT * FROM" + inputData[0][0] + "where Product_ID is " + str(searchInt))
 
     return render_template('search.html', title='New Search',
-                           form=form, legend='New Post', outputList=outputList, listLength=listLength)
+                           form=form, legend='New Search', outputList=outputList, listLength=listLength)
 
 
+@app.route("/post/searchText", methods=['GET', 'POST'])
+@login_required
+def searchText():
+    listLength = 0
+    outputList = []
+    inputData = []
+    name = 'none'
+    query = Product_Information.query.first()
+    test = Product.query.all()
+    if len(test) < 1:
+        instantiateItem()
+    form = SearchTextForm()
+    if form.validate_on_submit():
+        category = form.category.data
+        searchText = form.searchCritereaText.data
+        inputData = [[category, searchText]]  # , searchText]]
 
+        print(inputData[0][0])
+        if inputData[0][0] == 'Product':
+            query = Product.query.filter(Product.product_name == searchText).all()
 
+            name = query[0].product_name
+            price = query[0].price
+            ID = query[0].Product_ID
+            quantity = query[0].quantity
+            outputList = [['name', name], ['price', price],
+                          ['ID', ID], ['quantity', quantity]]
+            listLength = len(outputList)
+
+        elif inputData[0][0] == 'Product_Information':
+            query = Product_Information.query.filter(Product_Information.expiration_date
+                                                     == searchText).all()
+
+            IndividualID = query[0].Individual_ID
+            expirationDate = query[0].expiration_date
+            product_weight = query[0].product_weight
+            outputList = [['Individual ID', IndividualID], ['Expiration Date', expirationDate],
+                          ['Product Weight', product_weight]]
+            listLength = len(outputList)
+
+        elif inputData[0][0] == 'Employees':
+            query = Employees.query.filter(Employees.name
+                                           == searchText).all()
+
+            EmployeeID = query[0].Employee_ID
+            Name = query[0].name
+            Title = query[0].title
+            Salary = query[0].salary
+            JoinDate = query[0].join_date
+            outputList = [['Employee ID', EmployeeID], ['Name', Name],
+                          ['Title', Title], ['Salary', Salary], ['Join Date', JoinDate]]
+            listLength = len(outputList)
+
+    return render_template('searchText.html', title='New Text Search',
+                           form=form, legend='New Text Search',
+                           outputList=outputList, listLength=listLength)
 
 
 @app.route("/post/<int:post_id>")
