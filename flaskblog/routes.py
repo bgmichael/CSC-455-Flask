@@ -175,7 +175,7 @@ def search():
         searchInt = form.searchCritereaNumber.data
         serachText = form.searchCritereaText.data
         inputData = [[category, searchInt]]#, serachText)]
-     
+
         print(inputData[0][0])
         if inputData[0][0] == 'Product':
             name = Product.query.get(searchInt).product_name
