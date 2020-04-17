@@ -175,10 +175,7 @@ def search():
         searchInt = form.searchCritereaNumber.data
         serachText = form.searchCritereaText.data
         inputData = [[category, searchInt]]#, serachText)]
-        # catagoryText = text(category)
-        # queryTest = catagoryText.query.get(searchInt)
-        # flash('Your query has been performed!', 'success')
-
+     
         print(inputData[0][0])
         if inputData[0][0] == 'Product':
             name = Product.query.get(searchInt).product_name
