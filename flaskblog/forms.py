@@ -1,8 +1,9 @@
+import validator as validator
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, FloatField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, optional
 from flaskblog.models import User
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.ext.django.fields import ModelSelectField
@@ -80,3 +81,9 @@ class SearchForm(FlaskForm):
     searchCritereaNumber = FloatField('Search For (Number): ', validators=[DataRequired()])
     searchCritereaText = TextAreaField('Search For (Text (put in something for testing)): ', validators=[DataRequired()])
     submit = SubmitField('Search')
+
+class UpdateItem(FlaskForm):
+    Product_ID = IntegerField('Product ID (Required)', validators=[DataRequired()])
+    expirationDate = StringField('Item Expiration Date (Required)', validators=[DataRequired()])
+    amountToAdd = IntegerField('Amount to Add (Optional)', validators=[DataRequired()])
+    submit = SubmitField('Submit')

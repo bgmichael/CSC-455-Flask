@@ -3,10 +3,11 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
-from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship
+from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase, \
+    nextHighestIndividualId
 from sqlalchemy import text, Table, Column, Integer, String, MetaData
 
 
@@ -154,8 +155,48 @@ def add_item():
         db.session.commit()
         flash('Your item has been added!', 'success')
         return redirect(url_for('home'))
-    return render_template('add_item.html', title='New Item',
-                           form=form, legend='New Post')
+    return render_template('add_item.html', title='New Product',
+                           form=form, legend='New Product')
+
+@app.route("/post/updateItem", methods=['GET', 'POST'])
+@login_required
+def updateItem():
+    form = UpdateItem()
+    if form.validate_on_submit():
+        #Set Variables
+        updateID = form.Product_ID.data
+        print(updateID)
+        updateExpiration = form.expirationDate.data
+        updateProduct = db.session.query(Product).filter(Product.Product_ID == updateID).all()[0]
+        print(updateProduct)
+        updatequantity = form.amountToAdd.data
+        print(updatequantity)
+        ##logic for changing the item instance
+        if updatequantity != None:
+            currentquantity = updateProduct.quantity
+            updateProduct.quantity = updatequantity + currentquantity
+
+            sampleID = db.session.query(Part_Of_Relationship).filter\
+                (Part_Of_Relationship.Product_ID == updateID).first().Individual_ID
+            sampleWeight = db.session.query(Product_Information).filter\
+                (Product_Information.Individual_ID == sampleID).first().product_weight
+            for newitem in range(updatequantity):
+                newIndividualID = nextHighestIndividualId()
+                newPI = Product_Information(Individual_ID = newIndividualID,
+                                    expiration_date = updateExpiration,
+                                    product_weight = sampleWeight)
+                newPOR = Part_Of_Relationship(Individual_ID = newIndividualID, Product_ID = updateID)
+                db.session.add(newPI)
+                db.session.add(newPOR)
+
+        db.session.commit()
+        flash('Your update has been processed!', 'success')
+        return redirect(url_for('updateItem', title='Update Item', form=form, legend='Update Item'))
+
+
+    return render_template('updateItem.html', title='Update Item',
+                           form=form, legend='Update Item')
+
 
 
 @app.route("/post/search", methods=['GET', 'POST'])

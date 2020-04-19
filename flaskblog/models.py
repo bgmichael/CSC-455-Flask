@@ -68,6 +68,9 @@ class Part_Of_Relationship(db.Model):
     def __repr__(self):
         return f"Part_Of_Relationship('{self.Individual_ID}', '{self.Product_ID}')"
 
+
+
+
 # class Sold_By_Relationship(db.Model):
 #     Store_ID = db.Column(db.Integer, db.ForeignKey('store.Store_ID'), primary_key=True, )
 #     Product_ID = db.Column(db.Integer, primary_key=True)

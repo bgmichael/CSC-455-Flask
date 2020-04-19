@@ -9,7 +9,7 @@ from flaskblog.models import User, Post, Employees, Product, Product_Information
     #Part_Of_Relationship, Sold_By_Relationship, Store, Works_At_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from random import randint
-# from main.gendata import gendata
+from sqlalchemy import func
 
 employeeData = [[123456,"Bob Dole","Manager",50000, '2019-06-11'], [123452,"Betsy Smith","Cashier",15000, '2019-02-09'],
                 [123449,"Tyler Oliver","Cashier",15000, '2019-03-19'], [123438,"Donnie Macks","Clerk",26000, '2019-05-14'],
@@ -22,12 +22,12 @@ employeeData = [[123456,"Bob Dole","Manager",50000, '2019-06-11'], [123452,"Bets
                 [123446,"Penny Diaz","Cashier",15000, '2020-06-18'], [123440,"Susan Reynolds","Clerk",26000, '2016-05-28'],
                 [123441,"John Graham","Stocker",17000, '2020-01-17']]
 
-products = [[959742, 6.00, "Turkey Jerky Teriyaki", 4],
-            [50255224003, 3.50, "Ritter Sport Dark Chocolate", 3],
-            [80432106419, 20.00, "Single Pot Still Irish Whiskey", 10],
-            [859612001024, 9.99, "21st Amendment Hell or High Watermelon Wheat Beer", 12],
-            [805002000375, 4.00, "Dusk Deodorant", 28],
-            [321134771643, 3.00, "Blue Mint Antiseptic Mouth Rinse", 12]]
+products = [[959742, 6.00, "Turkey Jerky Teriyaki", 1],
+            [50255224003, 3.50, "Ritter Sport Dark Chocolate", 1],
+            [80432106419, 20.00, "Single Pot Still Irish Whiskey", 1],
+            [859612001024, 9.99, "21st Amendment Hell or High Watermelon Wheat Beer", 1],
+            [805002000375, 4.00, "Dusk Deodorant", 1],
+            [321134771643, 3.00, "Blue Mint Antiseptic Mouth Rinse", 1]]
 
 productInformationAndRelationship = [[1, "November 2022", 4.00, 959742],
                                      [2, "January 2021", 3.00, 50255224003],
@@ -35,6 +35,10 @@ productInformationAndRelationship = [[1, "November 2022", 4.00, 959742],
                                      [4, "January 2022", 12.00, 859612001024],
                                      [5, "February 2021,", 4.00, 805002000375],
                                      [6, "March 2022", 12.00, 321134771643]]
+
+def resetDatabase():
+    db.drop_all()
+    genData()
 
 
 def genData():
@@ -95,7 +99,15 @@ def instantiateProductInfo():
         db.session.add(productInfo)
     db.session.commit()
 
-
+def nextHighestIndividualId():
+    maxIndvId = db.session.query(func.max(Product_Information.Individual_ID))
+    maxId = maxIndvId[0]
+    maxId = maxId[0]
+    if maxId == None:
+        nextMaxId = 1
+    else:
+        nextMaxId = maxId + 1
+    return nextMaxId
 
 
 
