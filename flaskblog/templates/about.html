@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Product Information Page Test</h1>
+    <h1>Individual Item Page </h1>
 
     <body>
 
@@ -9,17 +9,14 @@
                 <div class="row">
                     <div class="col-sm-4">
                         <h2>{{post.Individual_ID}}</h2>
-                        <p>Name: {{ post.Individual_ID }}</p>
-                        <p>Title: {{ post.expiration_date }}</p>
-                        <p>Salary: {{ post.product_weight }}</p>
+                        <p>Individual ID: {{ post.Individual_ID }}</p>
+                        <p>Expiration: {{ post.expiration_date }}</p>
+                        <p>Weight: {{ post.product_weight }}</p>
                     </div>
                 </div>
             </div>
 
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
             {% endfor %}
 
     </body>
