@@ -2,7 +2,8 @@ import validator as validator
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, FloatField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, FloatField, \
+    SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, optional
 from flaskblog.models import User
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
@@ -64,6 +65,7 @@ class PostForm(FlaskForm):
     content = TextAreaField('Content', validators=[DataRequired()])
     submit = SubmitField('Post')
 
+
 class ItemForm(FlaskForm):
     Product_ID = IntegerField('Product ID (Int)', validators=[DataRequired()])
     price = FloatField('Price (Decimal)', validators=[DataRequired()])
@@ -76,11 +78,13 @@ class ItemForm(FlaskForm):
     #####
     submit = SubmitField('Add')
 
+
 class SearchForm(FlaskForm):
     category = TextAreaField('Category (Text)', validators=[DataRequired()])
     searchCritereaNumber = FloatField('Search For (Number): ', validators=[DataRequired()])
     searchCritereaText = TextAreaField('Search For (Text (Optional)): ', validators=[optional()])
     submit = SubmitField('Search')
+
 
 class UpdateItem(FlaskForm):
     Product_ID = IntegerField('Product ID (Required)', validators=[DataRequired()])
@@ -88,7 +92,23 @@ class UpdateItem(FlaskForm):
     amountToAdd = IntegerField('Amount to Add (Optional)', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+
 class DeleteItem(FlaskForm):
     Product_ID = IntegerField('Product ID (Required)', validators=[optional()])
     Individual_ID = IntegerField('Individual_ID (Required)', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+
+class AdvancedSearchFrontForm(FlaskForm):
+    options = [('Get Max', 'Get Max'),
+               ('Search Expiration', 'Search Expiration'),
+               ('Simulate Transaction', 'Simulate Transaction')]
+    SearchOption = SelectField('Search Criterea', choices=options)
+    submit = SubmitField('Submit')
+
+class SearchMaxForm(FlaskForm):
+    catagory = [('Price', 'Price'),
+                ('Product ID', 'Product ID'),
+                ('Weight', 'Weight'),]
+    SearchOption = SelectField('Catagory', choices=catagory)
+    submit = SubmitField('Submit for Max')

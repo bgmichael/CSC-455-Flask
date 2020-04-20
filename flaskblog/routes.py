@@ -3,12 +3,13 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, DeleteItem
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, DeleteItem, AdvancedSearchFrontForm, SearchMaxForm
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase, \
     nextHighestIndividualId
 from sqlalchemy import text, Table, Column, Integer, String, MetaData
+from sqlalchemy import func
 
 
 @app.route("/")
@@ -159,7 +160,7 @@ def add_item():
 def updateItem():
     form = UpdateItem()
     if form.validate_on_submit():
-        #Set Variables
+        #Set Variables (Example of Prepared Statements)
         updateID = form.Product_ID.data
         print(updateID)
         updateExpiration = form.expirationDate.data
@@ -280,8 +281,43 @@ def search():
                            form=form, legend='New Post', outputList=outputList, listLength=listLength)
 
 
+@app.route("/advancedSearchFront", methods=['GET', 'POST'])
+@login_required
+def advancedSearchFront():
+    form = AdvancedSearchFrontForm()
+    searchOption = form.SearchOption.data
+    if form.validate_on_submit():
+        if searchOption == 'Get Max':
+            return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max'))
+        elif searchOption == 'Search Expiration':
+            return redirect(url_for('searchExpiration', title='Search Expiration', form=form, legend='Search Expiration'))
+        elif searchOption == 'Simulate Transaction':
+            return redirect(url_for('simulateTransaction', title='Simulate Transaction', form=form, legend='Simulate Transaction'))
 
+    return render_template('AdvancedSearchFront.html', title='Advanced Search',
+                           form=form, legend='Advanced Search')
 
+@app.route("/advancedSearchFront/searchMax", methods=['GET', 'POST'])
+@login_required
+def advancedSearchMax():
+    form = SearchMaxForm()
+    max = 'None'
+    searchOption = form.SearchOption.data
+
+    if form.validate_on_submit():
+        if searchOption == 'Price':
+            max = db.session.query(func.max(Product.price))[0][0]
+            print(max)
+            #return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
+        elif searchOption == 'Product ID':
+            max = db.session.query(func.max(Product.Product_ID))[0][0]
+            #return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
+        elif searchOption == 'Weight':
+            max = db.session.query(func.max(Product_Information.product_weight))[0][0]
+            #return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
+
+    return render_template('AdvancedSearchMax.html', title='Advanced Search',
+                           form=form, legend='Advanced Search', max=max)
 
 
 @app.route("/post/<int:post_id>")
