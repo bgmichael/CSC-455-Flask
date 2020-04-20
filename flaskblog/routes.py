@@ -28,12 +28,8 @@ def home():
     if Part_Of_Relationship.query.first() == None:
         instantiateRelationship()
 
-        # productInfo = Product_Information(Individual_ID=11, expiration_date="April 10 2020", product_weight=13.00)
-        # print(productInfo)
-        # db.session.add(productInfo)
-        # db.session.commit()
 
-    posts = Employees.query.all()
+    posts = Product.query.all()
     return render_template(('home.html'), posts=posts)
 
 
@@ -44,9 +40,9 @@ def about():
     if len(test) < 1:
         genData()
     else:
-        posts = Employees.query.all()
+        posts = Product_Information.query.all()
         return render_template('about.html', title='About', posts=posts)
-    posts = Employees.query.all()
+    posts = Product_Information.query.all()
     return render_template('about.html', title='About', posts=posts)
 
 
