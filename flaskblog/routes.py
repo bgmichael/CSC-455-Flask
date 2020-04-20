@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, DeleteItem
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase, \
@@ -198,6 +198,34 @@ def updateItem():
                            form=form, legend='Update Item')
 
 
+@app.route("/post/deleteItem", methods=['GET', 'POST'])
+@login_required
+def deleteItem():
+    form = DeleteItem()
+    if form.validate_on_submit():
+        updateIndividualID = form.Individual_ID.data
+        updateProductID = form.Product_ID.data
+        POR_ToDelete = db.session.query(Part_Of_Relationship).filter\
+            (Part_Of_Relationship.Individual_ID == updateIndividualID).all()[0]
+        print(POR_ToDelete)
+        PI_ToDelete = db.session.query(Product_Information).filter\
+            (Product_Information.Individual_ID == updateIndividualID).all()[0]
+        print(PI_ToDelete)
+        updateQuantity = db.session.query(Product).filter\
+            (Product.Product_ID == updateProductID).all()[0].quantity
+        updateQuantity = updateQuantity - 1
+        db.session.query(Product).filter\
+            (Product.Product_ID == updateProductID).all()[0] = updateQuantity
+        db.session.delete(POR_ToDelete)
+        db.session.delete(PI_ToDelete)
+        db.session.commit()
+        flash('Your item has been Deleted!', 'success')
+        return redirect(url_for('deleteItem', title='Delete Item', form=form, legend='Delete Item'))
+
+    return render_template('deleteItem.html', title='Delete Item',
+                           form=form, legend='Delete Item')
+
+
 
 @app.route("/post/search", methods=['GET', 'POST'])
 @login_required
@@ -296,3 +324,5 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('home'))
+
+

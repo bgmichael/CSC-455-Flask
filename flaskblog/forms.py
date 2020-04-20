@@ -87,3 +87,8 @@ class UpdateItem(FlaskForm):
     expirationDate = StringField('Item Expiration Date (Required)', validators=[DataRequired()])
     amountToAdd = IntegerField('Amount to Add (Optional)', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class DeleteItem(FlaskForm):
+    Product_ID = IntegerField('Product ID (Required)', validators=[optional()])
+    Individual_ID = IntegerField('Individual_ID (Required)', validators=[DataRequired()])
+    submit = SubmitField('Submit')
