@@ -109,5 +109,43 @@ def nextHighestIndividualId():
         nextMaxId = maxId + 1
     return nextMaxId
 
+def monthToIntTranslation(month):
+    intTranslation = 0
+    if month == 'January':
+        intTranslation = 1
+    elif month == 'February':
+        intTranslation = 2
+    elif month == 'March':
+        intTranslation = 3
+    elif month == 'April':
+        intTranslation = 4
+    elif month == 'May':
+        intTranslation = 5
+    elif month == 'June':
+        intTranslation = 6
+    elif month == 'July':
+        intTranslation = 7
+    elif month == 'August':
+        intTranslation = 8
+    elif month == 'September':
+        intTranslation = 9
+    elif month == 'October':
+        intTranslation = 10
+    elif month == 'November':
+        intTranslation = 11
+    elif month == 'December':
+        intTranslation = 12
+
+    return intTranslation
+
+def seperateQueryResult(expirationString):
+    seperatedList = expirationString.split()
+    expirationMonth = seperatedList[0]
+    expirationYear = int(seperatedList[1][0:4])
+    resultList = [expirationMonth, expirationYear]
+    return resultList
+
+
+
 
 

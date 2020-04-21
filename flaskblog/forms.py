@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, FloatField, \
-    SelectField
+    SelectField, TextField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, optional
 from flaskblog.models import User
 from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
@@ -112,3 +112,16 @@ class SearchMaxForm(FlaskForm):
                 ('Weight', 'Weight'),]
     SearchOption = SelectField('Catagory', choices=catagory)
     submit = SubmitField('Submit for Max')
+
+class SearchExpirationForm(FlaskForm):
+    action = [('Show All', 'Show All'),
+              ('Search By Range', 'Search By Range'),
+              ('Search For Date', 'Search For Date')]
+
+    SearchOption = SelectField('Type of Search', choices=action)
+    SearchTextOne = StringField('Month', validators=[optional()])
+    SearchIntOne = IntegerField('Year', validators=[optional()])
+    SearchTextTwo = StringField('Month', validators=[optional()])
+    SearchIntTwo = IntegerField('Year', validators=[optional()])
+
+    submit = SubmitField('Submit for Search')

@@ -3,11 +3,12 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, DeleteItem, AdvancedSearchFrontForm, SearchMaxForm
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, \
+    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
-from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase, \
-    nextHighestIndividualId
+from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase,\
+    nextHighestIndividualId, monthToIntTranslation, seperateQueryResult
 from sqlalchemy import text, Table, Column, Integer, String, MetaData
 from sqlalchemy import func
 
@@ -29,10 +30,8 @@ def home():
     if Part_Of_Relationship.query.first() == None:
         instantiateRelationship()
 
-
     posts = Product.query.all()
     return render_template(('home.html'), posts=posts)
-
 
 
 @app.route("/about")
@@ -132,6 +131,7 @@ def new_post():
     return render_template('create_post.html', title='New Post',
                            form=form, legend='New Post')
 
+
 @app.route("/post/add", methods=['GET', 'POST'])
 @login_required
 def add_item():
@@ -143,7 +143,7 @@ def add_item():
         item = Product(Product_ID=form.Product_ID.data,
                        price=form.price.data,
                        product_name=form.product_name.data,
-                       quantity=form.quantity.data,)
+                       quantity=form.quantity.data, )
         itemInfo = Product_Information(Individual_ID=form.Individual_ID.data,
                                        expiration_date=form.expiration_date.data,
                                        product_weight=form.product_weight.data)
@@ -155,12 +155,13 @@ def add_item():
     return render_template('add_item.html', title='New Product',
                            form=form, legend='New Product')
 
+
 @app.route("/post/updateItem", methods=['GET', 'POST'])
 @login_required
 def updateItem():
     form = UpdateItem()
     if form.validate_on_submit():
-        #Set Variables (Example of Prepared Statements)
+        # Set Variables (Example of Prepared Statements)
         updateID = form.Product_ID.data
         print(updateID)
         updateExpiration = form.expirationDate.data
@@ -173,23 +174,22 @@ def updateItem():
             currentquantity = updateProduct.quantity
             updateProduct.quantity = updatequantity + currentquantity
 
-            sampleID = db.session.query(Part_Of_Relationship).filter\
+            sampleID = db.session.query(Part_Of_Relationship).filter \
                 (Part_Of_Relationship.Product_ID == updateID).first().Individual_ID
-            sampleWeight = db.session.query(Product_Information).filter\
+            sampleWeight = db.session.query(Product_Information).filter \
                 (Product_Information.Individual_ID == sampleID).first().product_weight
             for newitem in range(updatequantity):
                 newIndividualID = nextHighestIndividualId()
-                newPI = Product_Information(Individual_ID = newIndividualID,
-                                    expiration_date = updateExpiration,
-                                    product_weight = sampleWeight)
-                newPOR = Part_Of_Relationship(Individual_ID = newIndividualID, Product_ID = updateID)
+                newPI = Product_Information(Individual_ID=newIndividualID,
+                                            expiration_date=updateExpiration,
+                                            product_weight=sampleWeight)
+                newPOR = Part_Of_Relationship(Individual_ID=newIndividualID, Product_ID=updateID)
                 db.session.add(newPI)
                 db.session.add(newPOR)
 
         db.session.commit()
         flash('Your update has been processed!', 'success')
         return redirect(url_for('updateItem', title='Update Item', form=form, legend='Update Item'))
-
 
     return render_template('updateItem.html', title='Update Item',
                            form=form, legend='Update Item')
@@ -202,16 +202,16 @@ def deleteItem():
     if form.validate_on_submit():
         updateIndividualID = form.Individual_ID.data
         updateProductID = form.Product_ID.data
-        POR_ToDelete = db.session.query(Part_Of_Relationship).filter\
+        POR_ToDelete = db.session.query(Part_Of_Relationship).filter \
             (Part_Of_Relationship.Individual_ID == updateIndividualID).all()[0]
         print(POR_ToDelete)
-        PI_ToDelete = db.session.query(Product_Information).filter\
+        PI_ToDelete = db.session.query(Product_Information).filter \
             (Product_Information.Individual_ID == updateIndividualID).all()[0]
         print(PI_ToDelete)
-        updateQuantity = db.session.query(Product).filter\
+        updateQuantity = db.session.query(Product).filter \
             (Product.Product_ID == updateProductID).all()[0].quantity
         updateQuantity = updateQuantity - 1
-        db.session.query(Product).filter\
+        db.session.query(Product).filter \
             (Product.Product_ID == updateProductID).all()[0] = updateQuantity
         db.session.delete(POR_ToDelete)
         db.session.delete(PI_ToDelete)
@@ -221,7 +221,6 @@ def deleteItem():
 
     return render_template('deleteItem.html', title='Delete Item',
                            form=form, legend='Delete Item')
-
 
 
 @app.route("/post/search", methods=['GET', 'POST'])
@@ -240,8 +239,8 @@ def search():
         category = form.category.data
         searchInt = form.searchCritereaNumber.data
         serachText = form.searchCritereaText.data
-        inputData = [[category, searchInt]]#, serachText)]
-     
+        inputData = [[category, searchInt]]  # , serachText)]
+
         print(inputData[0][0])
         if inputData[0][0] == 'Product':
             name = Product.query.get(searchInt).product_name
@@ -249,7 +248,7 @@ def search():
             ID = Product.query.get(searchInt).Product_ID
             quantity = Product.query.get(searchInt).quantity
             outputList = [['name', name], ['price', price],
-                         ['ID', ID], ['quantity', quantity]]
+                          ['ID', ID], ['quantity', quantity]]
             listLength = len(outputList)
         elif inputData[0][0] == 'Product_Information':
             IndividualID = Product_Information.query.get(searchInt).Individual_ID
@@ -273,8 +272,6 @@ def search():
                           ['Title', Title], ['Salary', Salary], ['Join Date', JoinDate]]
             listLength = len(outputList)
 
-
-
         # query = text("SELECT * FROM" + inputData[0][0] + "where Product_ID is " + str(searchInt))
 
     return render_template('search.html', title='New Search',
@@ -290,12 +287,15 @@ def advancedSearchFront():
         if searchOption == 'Get Max':
             return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max'))
         elif searchOption == 'Search Expiration':
-            return redirect(url_for('searchExpiration', title='Search Expiration', form=form, legend='Search Expiration'))
+            return redirect(
+                url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration'))
         elif searchOption == 'Simulate Transaction':
-            return redirect(url_for('simulateTransaction', title='Simulate Transaction', form=form, legend='Simulate Transaction'))
+            return redirect(
+                url_for('simulateTransaction', title='Simulate Transaction', form=form, legend='Simulate Transaction'))
 
     return render_template('AdvancedSearchFront.html', title='Advanced Search',
                            form=form, legend='Advanced Search')
+
 
 @app.route("/advancedSearchFront/searchMax", methods=['GET', 'POST'])
 @login_required
@@ -308,16 +308,95 @@ def advancedSearchMax():
         if searchOption == 'Price':
             max = db.session.query(func.max(Product.price))[0][0]
             print(max)
-            #return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
+            # return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
         elif searchOption == 'Product ID':
             max = db.session.query(func.max(Product.Product_ID))[0][0]
-            #return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
+            # return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
         elif searchOption == 'Weight':
             max = db.session.query(func.max(Product_Information.product_weight))[0][0]
-            #return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
+            # return redirect(url_for('advancedSearchMax', title='Search Max', form=form, legend='Search Max', max=max))
 
     return render_template('AdvancedSearchMax.html', title='Advanced Search',
                            form=form, legend='Advanced Search', max=max)
+
+
+@app.route("/advancedSearchExpiration/searchExpiration", methods=['GET', 'POST'])
+@login_required
+def advancedSearchExpiration():
+    form = SearchExpirationForm()
+    searchOption = form.SearchOption.data
+    resultsList = []
+    listLength = len(resultsList)
+    if form.validate_on_submit():
+        if searchOption == 'Show All':
+            resultsList = db.session.query \
+                (Product.product_name, Part_Of_Relationship.Individual_ID, Part_Of_Relationship.Product_ID,
+                 Product_Information.expiration_date) \
+                .filter(Product.Product_ID == Part_Of_Relationship.Product_ID,
+                        Part_Of_Relationship.Individual_ID == Product_Information.Individual_ID) \
+                .all()
+            listLength = -1
+            return redirect(url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
+                                    resultsList=resultsList, listLength=listLength))
+        elif searchOption == 'Search By Range':
+            monthList = ['January', 'February', 'March', 'April', 'May',
+                         'June', 'July', 'August', 'September', 'October'
+                         'November', 'December']
+
+            textOne = form.SearchTextOne.data
+            numberOne = form.SearchIntOne.data
+            textTwo = form.SearchTextTwo.data
+            numberTwo = form.SearchIntTwo.data
+
+            textOneToInt = monthToIntTranslation(textOne)
+            textTwoToInt = monthToIntTranslation(textTwo)
+
+            monthRange = monthList[textOneToInt - 1: textTwoToInt - 1]
+
+            queryListFull = db.session.query\
+                (Product.product_name,Product_Information.expiration_date)\
+                .filter(Product.Product_ID == Part_Of_Relationship.Product_ID,
+                        Part_Of_Relationship.Individual_ID ==
+                        Product_Information.Individual_ID).all()
+            for queryresult in queryListFull:
+                expirationString = queryresult[1]
+                queryResultSeperate = seperateQueryResult(expirationString)
+
+                expirationDateYear = queryResultSeperate[1]
+                expirationDateMonth = queryResultSeperate[0]
+
+                if numberTwo > expirationDateYear > numberOne and \
+                        expirationDateMonth in monthRange:
+                    resultsList.append(queryresult)
+            listLength = len(resultsList)
+            return redirect(
+                url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
+                        resultsList=resultsList, listLength=listLength))
+        elif searchOption == 'Search For Date':
+            textOne = form.SearchTextOne.data
+            numberOne = form.SearchIntOne.data
+
+            queryListFull = db.session.query \
+                (Product.product_name, Product_Information.expiration_date) \
+                .filter(Product.Product_ID == Part_Of_Relationship.Product_ID,
+                        Part_Of_Relationship.Individual_ID ==
+                        Product_Information.Individual_ID).all()
+
+            for queryresult in queryListFull:
+                expirationString = queryresult[1]
+                queryResultSeperate = seperateQueryResult(expirationString)
+
+                expirationDateYear = queryResultSeperate[1]
+                expirationDateMonth = queryResultSeperate[0]
+
+                if expirationDateYear == numberOne and expirationDateMonth == textOne:
+                    resultsList.append(queryresult)
+            listLength = len(resultsList)
+            return redirect(
+                url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
+                        resultsList=resultsList, listLength=listLength))
+    return render_template('AdvancedSearchExpiration.html', title='Advanced Search',
+                           form=form, legend='Advanced Search', resultsList=resultsList, listLength=listLength)
 
 
 @app.route("/post/<int:post_id>")
@@ -356,5 +435,3 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('home'))
-
-

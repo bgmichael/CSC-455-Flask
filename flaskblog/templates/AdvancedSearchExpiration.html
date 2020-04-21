@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-group">
+                {{ form.SearchOption.label(class_="form-control-label") }}
+                {{ form.SearchOption(class="form-control form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.SearchTextOne.label(class_="form-control-label") }}
+                {{ form.SearchTextOne(class="form-control form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.SearchIntOne.label(class_="form-control-label") }}
+                {{ form.SearchIntOne(class="form-control form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.SearchTextTwo.label(class_="form-control-label") }}
+                {{ form.SearchTextTwo(class="form-control form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.SearchIntTwo.label(class_="form-control-label") }}
+                {{ form.SearchIntTwo(class="form-control form-control") }}
+            </div>
+            {% if listLength > 0 %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h2>Display Data</h2>
+                        {% if listLength == 1 %}
+                            <p>Product: {{resultsList[0][0]}} Expiration: {{ resultsList[0][1] }}</p>
+                        {% endif %}
+                        {% if listLength == -1 %}
+                            {% for query in resultsList %}
+                                <p>Product: {{resultsList[0][0]}} Expiration: {{ resultsList[0][1] }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        {% if listLength > 1 %}
+                            {% for query in resultsList %}
+                                <p>Product: {{resultsList[0][0]}} Expiration: {{ resultsList[0][1] }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+{% endblock content %}
