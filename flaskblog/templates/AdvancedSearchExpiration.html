@@ -25,22 +25,25 @@
                 {{ form.SearchIntTwo.label(class_="form-control-label") }}
                 {{ form.SearchIntTwo(class="form-control form-control") }}
             </div>
-            {% if listLength > 0 %}
+            {% if listLength != 0 %}
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-14">
                         <h2>Display Data</h2>
                         {% if listLength == 1 %}
-                            <p>Product: {{resultsList[0][0]}} Expiration: {{ resultsList[0][1] }}</p>
+                        <h1>Single Result</h1>
+                            <p>PRODUCT: {{resultsList[0][0]}} EXPIRATION: {{ resultsList[0][1] }}</p>
                         {% endif %}
                         {% if listLength == -1 %}
+                            <h1>All Entries</h1>
                             {% for query in resultsList %}
-                                <p>Product: {{resultsList[0][0]}} Expiration: {{ resultsList[0][1] }}</p>
+                                <p>PRODUCT: {{query[0]}} EXPIRATION: {{query[3]}}</p>
                             {% endfor %}
                         {% endif %}
                         {% if listLength > 1 %}
+                            <h1>Range Results</h1>
                             {% for query in resultsList %}
-                                <p>Product: {{resultsList[0][0]}} Expiration: {{ resultsList[0][1] }}</p>
+                                <p>PRODUCT: {{query[0]}} EXPIRATION: {{query[1]}}</p>
                             {% endfor %}
                         {% endif %}
                     </div>

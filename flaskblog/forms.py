@@ -119,8 +119,8 @@ class SearchExpirationForm(FlaskForm):
               ('Search For Date', 'Search For Date')]
 
     SearchOption = SelectField('Type of Search', choices=action)
-    SearchTextOne = StringField('Month', validators=[optional()])
-    SearchIntOne = IntegerField('Year', validators=[optional()])
+    SearchTextOne = StringField('Month (Lower Bound or Single Choice)', validators=[optional()])
+    SearchIntOne = IntegerField('Year (Lower Bound or Single Choice)', validators=[optional()])
     SearchTextTwo = StringField('Month', validators=[optional()])
     SearchIntTwo = IntegerField('Year', validators=[optional()])
 

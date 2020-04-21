@@ -329,18 +329,22 @@ def advancedSearchExpiration():
     listLength = len(resultsList)
     if form.validate_on_submit():
         if searchOption == 'Show All':
+            print("Inside Show all")
             resultsList = db.session.query \
                 (Product.product_name, Part_Of_Relationship.Individual_ID, Part_Of_Relationship.Product_ID,
                  Product_Information.expiration_date) \
                 .filter(Product.Product_ID == Part_Of_Relationship.Product_ID,
                         Part_Of_Relationship.Individual_ID == Product_Information.Individual_ID) \
                 .all()
+            print(resultsList)
             listLength = -1
-            return redirect(url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
-                                    resultsList=resultsList, listLength=listLength))
+            print(listLength)
+            # return redirect(url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
+            #                         resultsList=resultsList, listLength=listLength))
         elif searchOption == 'Search By Range':
+            print("Inside search by range")
             monthList = ['January', 'February', 'March', 'April', 'May',
-                         'June', 'July', 'August', 'September', 'October'
+                         'June', 'July', 'August', 'September', 'October',
                          'November', 'December']
 
             textOne = form.SearchTextOne.data
@@ -350,14 +354,21 @@ def advancedSearchExpiration():
 
             textOneToInt = monthToIntTranslation(textOne)
             textTwoToInt = monthToIntTranslation(textTwo)
+            print("TextOneToInt: ", textOneToInt)
+            print("TextTwoToInt: ", textTwoToInt)
 
-            monthRange = monthList[textOneToInt - 1: textTwoToInt - 1]
+            LowerBoundMonthRange = monthList[textOneToInt: -1]
+            UpperBoundMonthRange = monthList[0: textTwoToInt]
+            print("Month Range Lower:", LowerBoundMonthRange)
+            print("Month Range Upper:", UpperBoundMonthRange)
 
             queryListFull = db.session.query\
                 (Product.product_name,Product_Information.expiration_date)\
                 .filter(Product.Product_ID == Part_Of_Relationship.Product_ID,
                         Part_Of_Relationship.Individual_ID ==
                         Product_Information.Individual_ID).all()
+            print("Number Two: ", numberTwo)
+            print("Number One: ", numberOne)
             for queryresult in queryListFull:
                 expirationString = queryresult[1]
                 queryResultSeperate = seperateQueryResult(expirationString)
@@ -365,14 +376,31 @@ def advancedSearchExpiration():
                 expirationDateYear = queryResultSeperate[1]
                 expirationDateMonth = queryResultSeperate[0]
 
-                if numberTwo > expirationDateYear > numberOne and \
-                        expirationDateMonth in monthRange:
+                #In this case, the year is between the two years in question
+                if numberTwo > expirationDateYear > numberOne:
                     resultsList.append(queryresult)
+                #In this case, the query's year is equal to the Lower Bound year
+                if expirationDateYear == numberOne:
+                    # The month's are equal, therefore the query is included
+                    if expirationDateMonth == textOne:
+                        resultsList.append(queryresult)
+                    # Testing the query to see if it is in a range of months after the Lower Bound
+                    elif expirationDateMonth in LowerBoundMonthRange:
+                        resultsList.append(queryresult)
+                #Now testing for if query's year is equal to Upper Bound year
+                if expirationDateYear == numberTwo:
+                    if expirationDateMonth == textTwo:
+                        resultsList.append(queryresult)
+                    elif expirationDateMonth in UpperBoundMonthRange:
+                        resultsList.append(queryresult)
+
+            print(resultsList)
             listLength = len(resultsList)
-            return redirect(
-                url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
-                        resultsList=resultsList, listLength=listLength))
+            # return redirect(
+            #     url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
+            #             resultsList=resultsList, listLength=listLength))
         elif searchOption == 'Search For Date':
+            print("Inside Search For Date")
             textOne = form.SearchTextOne.data
             numberOne = form.SearchIntOne.data
 
@@ -389,12 +417,14 @@ def advancedSearchExpiration():
                 expirationDateYear = queryResultSeperate[1]
                 expirationDateMonth = queryResultSeperate[0]
 
+
                 if expirationDateYear == numberOne and expirationDateMonth == textOne:
                     resultsList.append(queryresult)
+            print(resultsList)
             listLength = len(resultsList)
-            return redirect(
-                url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
-                        resultsList=resultsList, listLength=listLength))
+            # return redirect(
+            #     url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration',
+            #             resultsList=resultsList, listLength=listLength))
     return render_template('AdvancedSearchExpiration.html', title='Advanced Search',
                            form=form, legend='Advanced Search', resultsList=resultsList, listLength=listLength)
 
