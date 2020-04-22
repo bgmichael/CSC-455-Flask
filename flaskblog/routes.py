@@ -4,18 +4,24 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, \
-    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm, SimulatedTransactionForm
-from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
+    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm, SimulatedTransactionForm, HomeForm
+from flaskblog.models import User, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase,\
-    nextHighestIndividualId, monthToIntTranslation, seperateQueryResult
+    nextHighestIndividualId, monthToIntTranslation, seperateQueryResult, resetDatabase
 from sqlalchemy import text, Table, Column, Integer, String, MetaData
 from sqlalchemy import func
 
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods=['GET', 'POST'])
 def home():
+    form = HomeForm()
+    if form.validate_on_submit():
+        resetDatabase()
+        print('RESET')
+        flash('Your Database has been reset!', 'success')
+        return render_template('home.html', form=form)
     test = Employees.query.all()
     print(len(test))
     if len(test) < 1:
@@ -31,7 +37,9 @@ def home():
         instantiateRelationship()
 
     posts = Product.query.all()
-    return render_template(('home.html'), posts=posts)
+
+
+    return render_template(('home.html'), form=form, posts=posts)
 
 
 @app.route("/about")

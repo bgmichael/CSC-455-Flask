@@ -4,7 +4,8 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
+from flaskblog.models import User, Employees, Product, Product_Information, Part_Of_Relationship, Store, Sold_By_Relationship,\
+Works_At_Relationship
     #Product, Product_Information, \
     #Part_Of_Relationship, Sold_By_Relationship, Store, Works_At_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
@@ -36,6 +37,8 @@ productInformationAndRelationship = [[1, "November 2022", 4.00, 959742],
                                      [5, "February 2021,", 4.00, 805002000375],
                                      [6, "March 2022", 12.00, 321134771643]]
 
+
+
 def resetDatabase():
     db.drop_all()
     genData()
@@ -57,10 +60,36 @@ def genData():
     hashed_password = bcrypt.generate_password_hash('Password123').decode('utf-8')
     user = User(username='bgmichael', email='bgmichael@outlook.com', password=hashed_password)
     db.session.add(user)
+    if Store.query.first() == None:
+        Store(Store_ID=1, location='Wilmington, NC')
+    if Product.query.first() == None:
+        instantiateItem()
+    if Product_Information.query.first() == None:
+        instantiateProductInfo()
+    if Part_Of_Relationship.query.first() == None:
+        instantiateRelationship()
+    if Works_At_Relationship.query.first() == None:
+        linkEmployees()
+    if Sold_By_Relationship.query.first() == None:
+        instantiateStoreToProduct()
     try:
         db.session.commit()
     except:
         db.session.rollback()
+
+def instantiateStoreToProduct():
+    print('inside instantiateStore')
+    for product in products:
+        productInStore = Sold_By_Relationship(Store_ID= 1, Product_ID=product[0])
+        db.session.add(productInStore)
+    db.session.commit()
+
+def linkEmployees():
+    print('inside linkEmployees')
+    for employee in employeeData:
+        employeeLink = Works_At_Relationship(Store_ID=1, Employee_ID= employee[0])
+        db.session.add(employeeLink)
+    db.session.commit()
 
 def instantiateItem():
     print('inside instantiateItem function2')

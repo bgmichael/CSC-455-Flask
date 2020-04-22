@@ -1,16 +1,49 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for post in posts %}
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/default.jpg') }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ post.Product_ID }}</a>
-              <small class="text-muted">{{ post.price }}</small>
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
             </div>
-            <h2><a class="article-title" href="{{ url_for('post', post_id=post.Product_ID) }}">{{ post.product_name }}</a></h2>
-            <p class="article-content">{{ post.price }}</p>
-          </div>
-        </article>
-    {% endfor %}
+        </form>
+    </div>
+            <fieldset class="form-group">
+    <div class="text-center">
+        <h1>Main Menu</h1>
+
+        <div class="row">
+            <div class="col-12 form-group">
+                <a class="btn btn-primary" type="button" href="{{ url_for('add_item') }}" style="width:70%"><font size="8">New Product</font></a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 form-group">
+                <a class="btn btn-primary" type="button" href="{{ url_for('updateItem') }}" style="width:70%"><font size="8">Update Item</font></a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 form-group">
+                <a class="btn btn-primary" type="button" href="{{ url_for('deleteItem') }}" style="width:70%"><font size="8">Delete Item</font></a>
+            </div>
+         </div>
+
+        <div class="row">
+            <div class="col-12 form-group">
+                <a class="btn btn-danger" type="button" href="{{ url_for('displayAllItems') }}" style="width:70%"><font size="8">Display All Items</font></a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 form-group">
+                <a class="btn btn-danger" type="button" href="{{ url_for('search') }}" style="width:70%"><font size="8">Search</font></a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 form-group">
+                <a class="btn btn-danger" type="button" href="{{ url_for('advancedSearchFront') }}" style="width:70%"><font size="8">Advanced Search</font></a>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

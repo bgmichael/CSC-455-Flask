@@ -14,21 +14,11 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
-    posts = db.relationship('Post', backref='author', lazy=True)
+    #posts = db.relationship('Post', backref='author', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
-
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    def __repr__(self):
-        return f"Post('{self.title}', '{self.date_posted}')"
 
 
 class Employees(db.Model):
@@ -70,32 +60,51 @@ class Part_Of_Relationship(db.Model):
 
 
 
+class Sold_By_Relationship(db.Model):
+    Store_ID = db.Column(db.Integer, db.ForeignKey('store.Store_ID'), primary_key=True, )
+    Product_ID = db.Column(db.Integer, primary_key=True)
 
-# class Sold_By_Relationship(db.Model):
-#     Store_ID = db.Column(db.Integer, db.ForeignKey('store.Store_ID'), primary_key=True, )
-#     Product_ID = db.Column(db.Integer, primary_key=True)
+    def __repr__(self):
+        return f"Sold_By_Relationship('{self.Individual_ID}', '{self.Product_ID}')"
+
+
+class Store(db.Model):
+    Store_ID = db.Column(db.Integer, db.ForeignKey('sold__by__relationship.Store_ID'), primary_key=True, )
+    location = db.Column(db.String(25), nullable=False)
+
+    def __repr__(self):
+        return f"Store('{self.Store_ID}', '{self.location}')"
+
+class Works_At_Relationship(db.Model):
+    Store_ID = db.Column(db.Integer, db.ForeignKey('store.Store_ID'), primary_key=True, )
+    Employee_ID = db.Column(db.Integer, db.ForeignKey('employees.Employee_ID'), primary_key=True, )
+
+    def __repr__(self):
+        return f"Works_At_Relationship('{self.Store_ID}', '{self.Employee_ID}')"
+
+
+#
+# class Post(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     title = db.Column(db.String(100), nullable=False)
+#     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+#     content = db.Column(db.Text, nullable=False)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 #
 #     def __repr__(self):
-#         return f"Sold_By_Relationship('{self.Individual_ID}', '{self.Product_ID}')"
+#         return f"Post('{self.title}', '{self.date_posted}')"
 #
+
 #
-#
-# class Store(db.Model):
-#     Store_ID = db.Column(db.Integer, db.ForeignKey('sold_by_relationship.Store_ID'), primary_key=True, )
-#     location = db.Column(db.String(25), nullable=False)
+# class User(db.Model, UserMixin):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(20), unique=True, nullable=False)
+#     email = db.Column(db.String(120), unique=True, nullable=False)
+#     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+#     password = db.Column(db.String(60), nullable=False)
+#     posts = db.relationship('Post', backref='author', lazy=True)
 #
 #     def __repr__(self):
-#         return f"Store('{self.Store_ID}', '{self.location}')"
-#
-# class Works_At_Relationship(db.Model):
-#     Store_ID = db.Column(db.Integer, db.ForeignKey('store.Store_ID'), primary_key=True, )
-#     Employee_ID = db.Column(db.Integer, db.ForeignKey('employees.Employee_ID'), primary_key=True, )
-#
-#     def __repr__(self):
-#         return f"Works_At_Relationship('{self.Store_ID}', '{self.Employee_ID}')"
-
-
-
-
+#         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
 

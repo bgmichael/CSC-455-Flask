@@ -133,3 +133,6 @@ class DisplayItemsForm(FlaskForm):
 class SimulatedTransactionForm(FlaskForm):
     transaction = TextAreaField('Products In Transaction', validators=[DataRequired()])
     submit = SubmitField('Process Transaction')
+
+class HomeForm(FlaskForm):
+    submit = SubmitField('Reset Database')
