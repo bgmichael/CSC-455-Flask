@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+            {% if listLength != 0 %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-14">
+                        <h1>All Items</h1>
+                            {% for query in resultsList %}
+                                <h3>______________</h3>
+                                <p>PRODUCT: {{query[0]}} </p>
+                                <p>PRODUCT_ID: {{query[1]}}</p>
+                                <p>INDIVIDUAL_ID: {{query[2]}}</p>
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </fieldset>
+    </form>
+</div>
+{% endblock content %}

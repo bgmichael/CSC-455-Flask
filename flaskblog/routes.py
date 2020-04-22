@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, \
-    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm
+    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase,\
@@ -221,6 +221,22 @@ def deleteItem():
 
     return render_template('deleteItem.html', title='Delete Item',
                            form=form, legend='Delete Item')
+
+@app.route("/displayAllItems", methods=['GET', 'POST'])
+@login_required
+def displayAllItems():
+    form = DisplayItemsForm()
+    resultsList = []
+    listLength = len(resultsList)
+    if form.validate_on_submit():
+        #Join Example between Product and Product_Information
+        resultsList = db.session.query(Product.product_name, Product.Product_ID,
+                                     Part_Of_Relationship.Individual_ID).join\
+        (Part_Of_Relationship).all()
+        listLength = len(resultsList)
+
+    return render_template('displayAllItems.html', title='Display Items',
+                           form=form, legend='Display Items', resultsList=resultsList)
 
 
 @app.route("/post/search", methods=['GET', 'POST'])

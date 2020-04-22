@@ -125,3 +125,6 @@ class SearchExpirationForm(FlaskForm):
     SearchIntTwo = IntegerField('Year', validators=[optional()])
 
     submit = SubmitField('Submit for Search')
+
+class DisplayItemsForm(FlaskForm):
+    submit = SubmitField('Display All Items')
