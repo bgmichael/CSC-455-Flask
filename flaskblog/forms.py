@@ -128,3 +128,8 @@ class SearchExpirationForm(FlaskForm):
 
 class DisplayItemsForm(FlaskForm):
     submit = SubmitField('Display All Items')
+
+
+class SimulatedTransactionForm(FlaskForm):
+    transaction = TextAreaField('Products In Transaction', validators=[DataRequired()])
+    submit = SubmitField('Process Transaction')

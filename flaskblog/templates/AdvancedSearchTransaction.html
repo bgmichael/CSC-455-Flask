@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <h4>Enter the items you want to process in your transaction.</h4>
+            <h4>Enter the items by product name, seperated by a comma.</h4>
+            <div class="form-group">
+                {{ form.transaction.label(class_="form-control-label") }}
+                {{ form.transaction(class="form-control form-control") }}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+{% endblock content %}

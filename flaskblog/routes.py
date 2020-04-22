@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, \
-    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm
+    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm, SimulatedTransactionForm
 from flaskblog.models import User, Post, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase,\
@@ -307,7 +307,7 @@ def advancedSearchFront():
                 url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration'))
         elif searchOption == 'Simulate Transaction':
             return redirect(
-                url_for('simulateTransaction', title='Simulate Transaction', form=form, legend='Simulate Transaction'))
+                url_for('advancedSearchTransaction', title='Simulate Transaction', form=form, legend='Simulate Transaction'))
 
     return render_template('AdvancedSearchFront.html', title='Advanced Search',
                            form=form, legend='Advanced Search')
@@ -443,6 +443,20 @@ def advancedSearchExpiration():
             #             resultsList=resultsList, listLength=listLength))
     return render_template('AdvancedSearchExpiration.html', title='Advanced Search',
                            form=form, legend='Advanced Search', resultsList=resultsList, listLength=listLength)
+
+
+@app.route("/advancedSearchFront/simulatedTransaction", methods=['GET', 'POST'])
+@login_required
+def advancedSearchTransaction():
+    form = SimulatedTransactionForm()
+    resultsList = []
+    listLength = len(resultsList)
+    if form.validate_on_submit():
+        transactionInput = form.transaction.data
+        print(transactionInput)
+
+    return render_template('AdvancedSearchTransaction.html', title='Simulated Transaction',
+                           form=form, legend='Simulated Transaction', resultsList=resultsList, listLength=listLength)
 
 
 @app.route("/post/<int:post_id>")
