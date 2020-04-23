@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, \
-    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm, SimulatedTransactionForm, HomeForm
+    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm, SimulatedTransactionForm, HomeForm, StoreManagementForm
 from flaskblog.models import User, Employees, Product, Product_Information, Part_Of_Relationship
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase,\
@@ -302,6 +302,23 @@ def search():
                            form=form, legend='New Post', outputList=outputList, listLength=listLength)
 
 
+
+@app.route("/storeManagementFront", methods=['GET', 'POST'])
+@login_required
+def storeManagementFront():
+    form = StoreManagementForm()
+    searchOption = form.SearchOption.data
+    if form.validate_on_submit():
+        if searchOption == 'Add/Delete Employee':
+            return redirect(url_for('employeeManagement', title='Add/Delete Employee', form=form, legend='Add/Delete Employee'))
+        elif searchOption == 'Add/Delete Store':
+            return redirect(
+                url_for('storeManagement', title='Add/Delete Store', form=form, legend='Add/Delete Store'))
+
+    return render_template('StoreManagementFront.html', title='Store Management Front',
+                           form=form, legend='Store Management Front')
+
+
 @app.route("/advancedSearchFront", methods=['GET', 'POST'])
 @login_required
 def advancedSearchFront():
@@ -458,13 +475,34 @@ def advancedSearchExpiration():
 def advancedSearchTransaction():
     form = SimulatedTransactionForm()
     resultsList = []
+    transactionListProduct = []
+    priceList = []
     listLength = len(resultsList)
+    itemCount = len(transactionListProduct)
+    transactionCost = 0
+
     if form.validate_on_submit():
         transactionInput = form.transaction.data
-        print(transactionInput)
+        transactionListString = transactionInput.split(", ")
+
+        print(transactionListString)
+        for item in transactionListString:
+            productName = db.session.query(Product).filter\
+                (Product.product_name == item).all()
+            transactionListProduct.append(productName)
+            print(transactionListProduct)
+        for product in transactionListProduct:
+            itemPrice = product[0].price
+            priceList.append(itemPrice)
+            print(priceList)
+        transactionCost = sum(priceList)
+        transactionCost = round(transactionCost, 2)
+        itemCount = len(transactionListProduct)
+
 
     return render_template('AdvancedSearchTransaction.html', title='Simulated Transaction',
-                           form=form, legend='Simulated Transaction', resultsList=resultsList, listLength=listLength)
+                           form=form, legend='Simulated Transaction', transactionListProduct=transactionListProduct,
+                           itemCount=itemCount, transactionCost=transactionCost)
 
 
 @app.route("/post/<int:post_id>")

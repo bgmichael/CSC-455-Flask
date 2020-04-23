@@ -23,12 +23,12 @@ employeeData = [[123456,"Bob Dole","Manager",50000, '2019-06-11'], [123452,"Bets
                 [123446,"Penny Diaz","Cashier",15000, '2020-06-18'], [123440,"Susan Reynolds","Clerk",26000, '2016-05-28'],
                 [123441,"John Graham","Stocker",17000, '2020-01-17']]
 
-products = [[959742, 6.00, "Turkey Jerky Teriyaki", 1],
-            [50255224003, 3.50, "Ritter Sport Dark Chocolate", 1],
-            [80432106419, 20.00, "Single Pot Still Irish Whiskey", 1],
-            [859612001024, 9.99, "21st Amendment Hell or High Watermelon Wheat Beer", 1],
-            [805002000375, 4.00, "Dusk Deodorant", 1],
-            [321134771643, 3.00, "Blue Mint Antiseptic Mouth Rinse", 1]]
+products = [[959742, 6.00, "Turkey Jerky", 1],
+            [50255224003, 3.50, "Dark Chocolate", 1],
+            [80432106419, 20.00, "Irish Whiskey", 1],
+            [859612001024, 9.99, "Wheat Beer", 1],
+            [805002000375, 4.00, "Deodorant", 1],
+            [321134771643, 3.00, "Mouth Rinse", 1]]
 
 productInformationAndRelationship = [[1, "November 2022", 4.00, 959742],
                                      [2, "January 2021", 3.00, 50255224003],

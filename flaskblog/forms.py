@@ -136,3 +136,9 @@ class SimulatedTransactionForm(FlaskForm):
 
 class HomeForm(FlaskForm):
     submit = SubmitField('Reset Database')
+
+class StoreManagementForm(FlaskForm):
+    options = [('Add/Delete Employee', 'Add/Delete Employee'),
+               ('Add/Delete Store', 'Add/Delete Store')]
+    SearchOption = SelectField('Action', choices=options)
+    submit = SubmitField('Submit')

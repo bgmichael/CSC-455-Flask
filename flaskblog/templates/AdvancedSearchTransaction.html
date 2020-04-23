@@ -7,14 +7,32 @@
             <legend class="border-bottom mb-4">{{ legend }}</legend>
             <h4>Enter the items you want to process in your transaction.</h4>
             <h4>Enter the items by product name, seperated by a comma.</h4>
+            <h4>Example : Turkey Jerky, Deodorant, Wheat Beer</h4>
             <div class="form-group">
                 {{ form.transaction.label(class_="form-control-label") }}
                 {{ form.transaction(class="form-control form-control") }}
             </div>
-        </fieldset>
-        <div class="form-group">
+            <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
-        </div>
+            </div>
+            {% if itemCount != 0 %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-14">
+                        <h2>Transaction Results</h2>
+                        <h4>Total Cost: {{transactionCost}}</h4>
+                        <h4>Total Item Count: {{itemCount}}</h4>
+                        {% if itemCount >= 1 %}
+                            <h4>_____________________</h4>
+                            {% for query in transactionListProduct %}
+                                <p>PRODUCT NAME: {{query[0].product_name}} COST: {{query[0].price}}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </fieldset>
     </form>
 </div>
 {% endblock content %}
