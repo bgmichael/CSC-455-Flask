@@ -106,12 +106,14 @@ class AdvancedSearchFrontForm(FlaskForm):
     SearchOption = SelectField('Search Criterea', choices=options)
     submit = SubmitField('Submit')
 
+
 class SearchMaxForm(FlaskForm):
     catagory = [('Price', 'Price'),
                 ('Product ID', 'Product ID'),
-                ('Weight', 'Weight'),]
+                ('Weight', 'Weight'), ]
     SearchOption = SelectField('Catagory', choices=catagory)
     submit = SubmitField('Submit for Max')
+
 
 class SearchExpirationForm(FlaskForm):
     action = [('Show All', 'Show All'),
@@ -126,6 +128,7 @@ class SearchExpirationForm(FlaskForm):
 
     submit = SubmitField('Submit for Search')
 
+
 class DisplayItemsForm(FlaskForm):
     submit = SubmitField('Display All Items')
 
@@ -134,11 +137,33 @@ class SimulatedTransactionForm(FlaskForm):
     transaction = TextAreaField('Products In Transaction', validators=[DataRequired()])
     submit = SubmitField('Process Transaction')
 
+
 class HomeForm(FlaskForm):
     submit = SubmitField('Reset Database')
+
 
 class StoreManagementForm(FlaskForm):
     options = [('Add/Delete Employee', 'Add/Delete Employee'),
                ('Add/Delete Store', 'Add/Delete Store')]
     SearchOption = SelectField('Action', choices=options)
+    submit = SubmitField('Submit')
+
+
+class EmployeeManagementForm(FlaskForm):
+    action = [('Add Employee', 'Add Employee'),
+              ('Delete Employee', 'Delete Employee')]
+    SearchOption = SelectField('Action', choices=action)
+    EmployeeID = IntegerField('Employee ID (required)', validators=[DataRequired()])
+    EmployeeName = StringField('Employee Name', validators=[optional()])
+    EmployeeTitle = StringField('Employee Title', validators=[optional()])
+    EmployeeSalary = IntegerField('Employee Salary', validators=[optional()])
+    EmployeeJoinDate = StringField('Employee Join Date (yyyy-mm-dd)', validators=[optional()])
+    submit = SubmitField('Submit')
+
+class StoreAddOrDeleteForm(FlaskForm):
+    action = [('Add Store', 'Add Store'),
+              ('Delete Store', 'Delete Store')]
+    SearchOption = SelectField('Action', choices=action)
+    StoreID = IntegerField('Store ID (required)', validators=[DataRequired()])
+    StoreLocation = StringField('Store Location', validators=[optional()])
     submit = SubmitField('Submit')

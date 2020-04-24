@@ -60,17 +60,18 @@ def genData():
     hashed_password = bcrypt.generate_password_hash('Password123').decode('utf-8')
     user = User(username='bgmichael', email='bgmichael@outlook.com', password=hashed_password)
     db.session.add(user)
-    if Store.query.first() == None:
-        Store(Store_ID=1, location='Wilmington, NC')
-    if Product.query.first() == None:
+    if db.session.query(Store).all() == []:
+        firstStore = Store(Store_ID=1, location='Wilmington, NC')
+        db.session.add(firstStore)
+    if db.session.query(Product).all() == []:
         instantiateItem()
-    if Product_Information.query.first() == None:
+    if db.session.query(Product_Information).all() == []:
         instantiateProductInfo()
-    if Part_Of_Relationship.query.first() == None:
+    if db.session.query(Part_Of_Relationship).all() == []:
         instantiateRelationship()
-    if Works_At_Relationship.query.first() == None:
+    if db.session.query(Works_At_Relationship).all() == []:
         linkEmployees()
-    if Sold_By_Relationship.query.first() == None:
+    if db.session.query(Sold_By_Relationship).all() == []:
         instantiateStoreToProduct()
     try:
         db.session.commit()

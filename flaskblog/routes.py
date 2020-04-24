@@ -4,10 +4,12 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, ItemForm, SearchForm, UpdateItem, \
-    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm, SimulatedTransactionForm, HomeForm, StoreManagementForm
-from flaskblog.models import User, Employees, Product, Product_Information, Part_Of_Relationship
+    DeleteItem, AdvancedSearchFrontForm, SearchMaxForm, SearchExpirationForm, DisplayItemsForm, \
+    SimulatedTransactionForm, HomeForm, StoreManagementForm, \
+    EmployeeManagementForm, StoreAddOrDeleteForm
+from flaskblog.models import User, Employees, Product, Product_Information, Part_Of_Relationship, Store
 from flask_login import login_user, current_user, logout_user, login_required
-from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase,\
+from flaskblog.gendata import genData, instantiateItem, instantiateProductInfo, instantiateRelationship, resetDatabase, \
     nextHighestIndividualId, monthToIntTranslation, seperateQueryResult, resetDatabase
 from sqlalchemy import text, Table, Column, Integer, String, MetaData
 from sqlalchemy import func
@@ -37,7 +39,6 @@ def home():
         instantiateRelationship()
 
     posts = Product.query.all()
-
 
     return render_template(('home.html'), form=form, posts=posts)
 
@@ -230,6 +231,7 @@ def deleteItem():
     return render_template('deleteItem.html', title='Delete Item',
                            form=form, legend='Delete Item')
 
+
 @app.route("/displayAllItems", methods=['GET', 'POST'])
 @login_required
 def displayAllItems():
@@ -237,10 +239,10 @@ def displayAllItems():
     resultsList = []
     listLength = len(resultsList)
     if form.validate_on_submit():
-        #Join Example between Product and Product_Information
+        # Join Example between Product and Product_Information
         resultsList = db.session.query(Product.product_name, Product.Product_ID,
-                                     Part_Of_Relationship.Individual_ID).join\
-        (Part_Of_Relationship).all()
+                                       Part_Of_Relationship.Individual_ID).join \
+            (Part_Of_Relationship).all()
         listLength = len(resultsList)
 
     return render_template('displayAllItems.html', title='Display Items',
@@ -302,7 +304,6 @@ def search():
                            form=form, legend='New Post', outputList=outputList, listLength=listLength)
 
 
-
 @app.route("/storeManagementFront", methods=['GET', 'POST'])
 @login_required
 def storeManagementFront():
@@ -310,13 +311,63 @@ def storeManagementFront():
     searchOption = form.SearchOption.data
     if form.validate_on_submit():
         if searchOption == 'Add/Delete Employee':
-            return redirect(url_for('employeeManagement', title='Add/Delete Employee', form=form, legend='Add/Delete Employee'))
+            return redirect(
+                url_for('employeeManagement', title='Add/Delete Employee', form=form, legend='Add/Delete Employee'))
         elif searchOption == 'Add/Delete Store':
             return redirect(
                 url_for('storeManagement', title='Add/Delete Store', form=form, legend='Add/Delete Store'))
 
     return render_template('StoreManagementFront.html', title='Store Management Front',
                            form=form, legend='Store Management Front')
+
+
+@app.route("/storeManagementFront/employeeManagement", methods=['GET', 'POST'])
+@login_required
+def employeeManagement():
+    form = EmployeeManagementForm()
+    searchOption = form.SearchOption.data
+    if form.validate_on_submit():
+        if searchOption == 'Add Employee':
+            newEmployee = Employees(Employee_ID=form.EmployeeID.data,
+                                    name=form.EmployeeName.data,
+                                    title=form.EmployeeTitle.data,
+                                    salary=form.EmployeeSalary.data,
+                                    join_date=form.EmployeeJoinDate.data)
+            db.session.add(newEmployee)
+            db.session.commit()
+            flash('Your Employee has been added!', 'success')
+        elif searchOption == 'Delete Employee':
+            employeeID = form.EmployeeID.data
+            employeeToDelete = db.session.query(Employees).filter \
+                (Employees.Employee_ID == employeeID).all()[0]
+            db.session.delete(employeeToDelete)
+            db.session.commit()
+            flash('Your Employee has been deleted!', 'success')
+    return render_template('EmployeeManagement.html', title='Employee Management',
+                           form=form, legend='Employee Management')
+
+
+@app.route("/storeManagementFront/storeManagement", methods=['GET', 'POST'])
+@login_required
+def storeManagement():
+    form = StoreAddOrDeleteForm()
+    searchOption = form.SearchOption.data
+    if form.validate_on_submit():
+        if searchOption == 'Add Store':
+            newStore = Store(Store_ID=form.StoreID.data,
+                             location=form.StoreLocation.data)
+            db.session.add(newStore)
+            db.session.commit()
+            flash('Your Store has been added!', 'success')
+        elif searchOption == 'Delete Store':
+            StoreID = form.StoreID.data
+            StoreToDelete = db.session.query(Store).filter \
+                (Store.Store_ID == StoreID).all()[0]
+            db.session.delete(StoreToDelete)
+            db.session.commit()
+            flash('Your Store has been deleted!', 'success')
+    return render_template('StoreManagement.html', title='Store Management',
+                           form=form, legend='Store Management')
 
 
 @app.route("/advancedSearchFront", methods=['GET', 'POST'])
@@ -332,7 +383,8 @@ def advancedSearchFront():
                 url_for('advancedSearchExpiration', title='Search Expiration', form=form, legend='Search Expiration'))
         elif searchOption == 'Simulate Transaction':
             return redirect(
-                url_for('advancedSearchTransaction', title='Simulate Transaction', form=form, legend='Simulate Transaction'))
+                url_for('advancedSearchTransaction', title='Simulate Transaction', form=form,
+                        legend='Simulate Transaction'))
 
     return render_template('AdvancedSearchFront.html', title='Advanced Search',
                            form=form, legend='Advanced Search')
@@ -403,8 +455,8 @@ def advancedSearchExpiration():
             print("Month Range Lower:", LowerBoundMonthRange)
             print("Month Range Upper:", UpperBoundMonthRange)
 
-            queryListFull = db.session.query\
-                (Product.product_name,Product_Information.expiration_date)\
+            queryListFull = db.session.query \
+                (Product.product_name, Product_Information.expiration_date) \
                 .filter(Product.Product_ID == Part_Of_Relationship.Product_ID,
                         Part_Of_Relationship.Individual_ID ==
                         Product_Information.Individual_ID).all()
@@ -417,10 +469,10 @@ def advancedSearchExpiration():
                 expirationDateYear = queryResultSeperate[1]
                 expirationDateMonth = queryResultSeperate[0]
 
-                #In this case, the year is between the two years in question
+                # In this case, the year is between the two years in question
                 if numberTwo > expirationDateYear > numberOne:
                     resultsList.append(queryresult)
-                #In this case, the query's year is equal to the Lower Bound year
+                # In this case, the query's year is equal to the Lower Bound year
                 if expirationDateYear == numberOne:
                     # The month's are equal, therefore the query is included
                     if expirationDateMonth == textOne:
@@ -428,7 +480,7 @@ def advancedSearchExpiration():
                     # Testing the query to see if it is in a range of months after the Lower Bound
                     elif expirationDateMonth in LowerBoundMonthRange:
                         resultsList.append(queryresult)
-                #Now testing for if query's year is equal to Upper Bound year
+                # Now testing for if query's year is equal to Upper Bound year
                 if expirationDateYear == numberTwo:
                     if expirationDateMonth == textTwo:
                         resultsList.append(queryresult)
@@ -458,7 +510,6 @@ def advancedSearchExpiration():
                 expirationDateYear = queryResultSeperate[1]
                 expirationDateMonth = queryResultSeperate[0]
 
-
                 if expirationDateYear == numberOne and expirationDateMonth == textOne:
                     resultsList.append(queryresult)
             print(resultsList)
@@ -487,7 +538,7 @@ def advancedSearchTransaction():
 
         print(transactionListString)
         for item in transactionListString:
-            productName = db.session.query(Product).filter\
+            productName = db.session.query(Product).filter \
                 (Product.product_name == item).all()
             transactionListProduct.append(productName)
             print(transactionListProduct)
@@ -498,7 +549,6 @@ def advancedSearchTransaction():
         transactionCost = sum(priceList)
         transactionCost = round(transactionCost, 2)
         itemCount = len(transactionListProduct)
-
 
     return render_template('AdvancedSearchTransaction.html', title='Simulated Transaction',
                            form=form, legend='Simulated Transaction', transactionListProduct=transactionListProduct,
