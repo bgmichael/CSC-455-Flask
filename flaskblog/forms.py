@@ -81,8 +81,11 @@ class ItemForm(FlaskForm):
 
 class SearchForm(FlaskForm):
     category = TextAreaField('Category (Text)', validators=[DataRequired()])
-    searchCritereaNumber = FloatField('Search For (Number): ', validators=[DataRequired()])
-    searchCritereaText = TextAreaField('Search For (Text (Optional)): ', validators=[optional()])
+    options = [('Search By ID', 'Search By ID'),
+               ('Search By Name', 'Search By Name'),]
+    SearchOption = SelectField('Search By Criterea', choices=options)
+    searchCritereaNumber = FloatField('Search By (Product ID): ', validators=[optional()])
+    searchCritereaText = TextAreaField('Search By (Text: Only Product and Employee): ', validators=[optional()])
     submit = SubmitField('Search')
 
 

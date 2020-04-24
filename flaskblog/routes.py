@@ -264,44 +264,66 @@ def search():
     if form.validate_on_submit():
         category = form.category.data
         searchInt = form.searchCritereaNumber.data
-        serachText = form.searchCritereaText.data
-        inputData = [[category, searchInt]]  # , serachText)]
+        searchText = form.searchCritereaText.data
+        searchOption = form.SearchOption.data
+        inputData = [[category, searchInt, searchText]]
 
         print(inputData[0][0])
-        if inputData[0][0] == 'Product':
-            name = Product.query.get(searchInt).product_name
-            price = Product.query.get(searchInt).price
-            ID = Product.query.get(searchInt).Product_ID
-            quantity = Product.query.get(searchInt).quantity
-            outputList = [['name', name], ['price', price],
-                          ['ID', ID], ['quantity', quantity]]
-            listLength = len(outputList)
-        elif inputData[0][0] == 'Product_Information':
-            IndividualID = Product_Information.query.get(searchInt).Individual_ID
-            expirationDate = Product_Information.query.get(searchInt).expiration_date
-            product_weight = Product_Information.query.get(searchInt).product_weight
-            outputList = [['Individual ID', IndividualID], ['Expiration Date', expirationDate],
-                          ['Product Weight', product_weight]]
-            listLength = len(outputList)
-        elif inputData[0][0] == 'Part_Of_Relationship':
-            IndividualID = Part_Of_Relationship.query.get(searchInt).IndividualID
-            ProductID = Part_Of_Relationship.query.get(searchInt).Product_ID
-            outputList = [['Individual ID', IndividualID], ['Product ID', ProductID]]
-            listLength = len(outputList)
-        elif inputData[0][0] == 'Employees':
-            EmployeeID = Employees.query.get(searchInt).Employee_ID
-            Name = Employees.query.get(searchInt).name
-            Title = Employees.query.get(searchInt).title
-            Salary = Employees.query.get(searchInt).salary
-            JoinDate = Employees.query.get(searchInt).join_date
-            outputList = [['Employee ID', EmployeeID], ['Name', Name],
-                          ['Title', Title], ['Salary', Salary], ['Join Date', JoinDate]]
-            listLength = len(outputList)
-
-        # query = text("SELECT * FROM" + inputData[0][0] + "where Product_ID is " + str(searchInt))
+        if searchOption == 'Search By ID':
+            if inputData[0][0] == 'Product':
+                name = Product.query.get(searchInt).product_name
+                price = Product.query.get(searchInt).price
+                ID = Product.query.get(searchInt).Product_ID
+                quantity = Product.query.get(searchInt).quantity
+                outputList = [['name', name], ['price', price],
+                              ['ID', ID], ['quantity', quantity]]
+                listLength = len(outputList)
+            elif inputData[0][0] == 'Product_Information':
+                IndividualID = Product_Information.query.get(searchInt).Individual_ID
+                expirationDate = Product_Information.query.get(searchInt).expiration_date
+                product_weight = Product_Information.query.get(searchInt).product_weight
+                outputList = [['Individual ID', IndividualID], ['Expiration Date', expirationDate],
+                              ['Product Weight', product_weight]]
+                listLength = len(outputList)
+            elif inputData[0][0] == 'Part_Of_Relationship':
+                IndividualID = Part_Of_Relationship.query.get(searchInt).IndividualID
+                ProductID = Part_Of_Relationship.query.get(searchInt).Product_ID
+                outputList = [['Individual ID', IndividualID], ['Product ID', ProductID]]
+                listLength = len(outputList)
+            elif inputData[0][0] == 'Employees':
+                EmployeeID = Employees.query.get(searchInt).Employee_ID
+                Name = Employees.query.get(searchInt).name
+                Title = Employees.query.get(searchInt).title
+                Salary = Employees.query.get(searchInt).salary
+                JoinDate = Employees.query.get(searchInt).join_date
+                outputList = [['Employee ID', EmployeeID], ['Name', Name],
+                              ['Title', Title], ['Salary', Salary], ['Join Date', JoinDate]]
+                listLength = len(outputList)
+        elif searchOption == 'Search By Name':
+            if inputData[0][0] == 'Product':
+                productInstance = db.session.query(Product).filter \
+                    (Product.product_name == searchText).all()[0]
+                name = productInstance.product_name
+                price = productInstance.price
+                ID = productInstance.Product_ID
+                quantity = productInstance.quantity
+                outputList = [['name', name], ['price', price],
+                              ['ID', ID], ['quantity', quantity]]
+                listLength = len(outputList)
+            elif inputData[0][0] == 'Employees':
+                productInstance = db.session.query(Employees).filter \
+                    (Employees.name == searchText).all()[0]
+                EmployeeID = productInstance.Employee_ID
+                Name = productInstance.name
+                Title = productInstance.title
+                Salary = productInstance.salary
+                JoinDate = productInstance.join_date
+                outputList = [['Employee ID', EmployeeID], ['Name', Name],
+                              ['Title', Title], ['Salary', Salary], ['Join Date', JoinDate]]
+                listLength = len(outputList)
 
     return render_template('search.html', title='New Search',
-                           form=form, legend='New Post', outputList=outputList, listLength=listLength)
+                           form=form, legend='Search', outputList=outputList, listLength=listLength)
 
 
 @app.route("/storeManagementFront", methods=['GET', 'POST'])
