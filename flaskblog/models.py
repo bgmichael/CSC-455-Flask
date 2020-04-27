@@ -28,6 +28,8 @@ class Employees(db.Model):
     salary = db.Column(db.Integer, nullable=False)
     join_date = db.Column(db.String(25), nullable=False)
 
+    # lists = db.relationship("Store", backref="employees", cascade="all, delete")
+
     def __repr__(self):
         return f"Employees('{self.Employee_ID}', '{self.name}', '{self.title}','{self.salary}','{self.join_date}')"
 
@@ -55,6 +57,8 @@ class Part_Of_Relationship(db.Model):
     Product_ID = db.Column(db.Integer, db.ForeignKey('product.Product_ID'), primary_key=True)
     #db.ForeignKey('product_information.Individual_ID'), db.ForeignKey('product.Product_ID')
 
+    name = db.relationship("Product", backref="part_of_relationship")
+
     def __repr__(self):
         return f"Part_Of_Relationship('{self.Individual_ID}', '{self.Product_ID}')"
 
@@ -78,6 +82,8 @@ class Store(db.Model):
 class Works_At_Relationship(db.Model):
     Store_ID = db.Column(db.Integer, db.ForeignKey('store.Store_ID'), primary_key=True, )
     Employee_ID = db.Column(db.Integer, db.ForeignKey('employees.Employee_ID'), primary_key=True, )
+
+    name = db.relationship("Employees", backref="works_at_relationship", cascade="all, delete")
 
     def __repr__(self):
         return f"Works_At_Relationship('{self.Store_ID}', '{self.Employee_ID}')"

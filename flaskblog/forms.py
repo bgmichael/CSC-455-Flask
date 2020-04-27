@@ -73,7 +73,7 @@ class ItemForm(FlaskForm):
     quantity = IntegerField('Quantity (Int)', validators=[DataRequired()])
     #####
     Individual_ID = IntegerField('Individual ID (Int)', validators=[DataRequired()])
-    expiration_date = TextAreaField('Expiration Date (Text)', validators=[DataRequired()])
+    expiration_date = TextAreaField('Expiration Date (Month Year) (Text)', validators=[DataRequired()])
     product_weight = FloatField('Product Weight (Decimal)', validators=[DataRequired()])
     #####
     submit = SubmitField('Add')
@@ -91,7 +91,7 @@ class SearchForm(FlaskForm):
 
 class UpdateItem(FlaskForm):
     Product_ID = IntegerField('Product ID (Required)', validators=[DataRequired()])
-    expirationDate = StringField('Item Expiration Date (Required)', validators=[DataRequired()])
+    expirationDate = StringField('Item Expiration Date (month year) (Required)', validators=[DataRequired()])
     amountToAdd = IntegerField('Amount to Add (Optional)', validators=[DataRequired()])
     submit = SubmitField('Submit')
 

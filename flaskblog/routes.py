@@ -219,11 +219,17 @@ def deleteItem():
         print(PI_ToDelete)
         updateQuantity = db.session.query(Product).filter \
             (Product.Product_ID == updateProductID).all()[0].quantity
+        print("Update Before:", updateQuantity)
         updateQuantity = updateQuantity - 1
-        db.session.query(Product).filter \
-            (Product.Product_ID == updateProductID).all()[0] = updateQuantity
+        print("Update After:", updateQuantity)
+        db.session.query(Product).filter(Product.Product_ID == updateProductID).all()[0].quantity = updateQuantity
+        testQuery = db.session.query(Product).filter(Product.Product_ID == updateProductID).all()[0].quantity
+        print(testQuery)
         db.session.delete(POR_ToDelete)
         db.session.delete(PI_ToDelete)
+        if updateQuantity == 0:
+            product = db.session.query(Product).filter(Product.Product_ID == updateProductID).all()[0]
+            db.session.delete(product)
         db.session.commit()
         flash('Your item has been Deleted!', 'success')
         return redirect(url_for('deleteItem', title='Delete Item', form=form, legend='Delete Item'))
